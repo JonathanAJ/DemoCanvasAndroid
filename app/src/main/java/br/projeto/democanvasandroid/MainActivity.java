@@ -2,15 +2,28 @@ package br.projeto.democanvasandroid;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
     private TelaView tela;
+    private Button btSalva;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tela = new TelaView(this);
         setContentView(R.layout.activity_main);
+
+        tela = (TelaView) findViewById(R.id.telaView);
+
+        btSalva = (Button) findViewById(R.id.btSalva);
+
+        btSalva.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+            }
+        });
     }
 }
