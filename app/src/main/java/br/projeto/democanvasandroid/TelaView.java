@@ -1,9 +1,11 @@
 package br.projeto.democanvasandroid;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ public class TelaView extends View {
     private Circulo circulo;
     private ArrayList<Circulo> listCirc;
     private Iterator<Circulo> circIt;
+    private Drawable img;
 
     /**
      *
@@ -60,6 +63,14 @@ public class TelaView extends View {
     public TelaView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
+        TypedArray typedArray = null;
+        try{
+            typedArray = context.obtainStyledAttributes(attrs, R.styleable.TelaView, 0, 0);
+            img = typedArray.getDrawable(R.styleable.TelaView_imgDrawable);
+
+        } finally {
+            typedArray.recycle();
+        }
     }
 
     public TelaView(Context context, AttributeSet attrs, int defStyle) {
@@ -97,6 +108,7 @@ public class TelaView extends View {
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
+        desenhaImagem(canvas, img);
         if(inicial) {
             circulo.setX((float) (getWidth()*0.5));
             circulo.setY((float) (getHeight()*0.5));
@@ -131,6 +143,12 @@ public class TelaView extends View {
 
     public void desenhaLinha(Canvas canvas, float xStart, float yStart, float xStop, float yStop, Paint paintLine){
         canvas.drawLine(xStart, yStart, xStop, yStop, paintLine);
+    }
+
+    public void desenhaImagem(Canvas canvas, Drawable d){
+
+        d.setBounds(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
+        d.draw(canvas);
     }
 
     public void salvaListaCirculo(float x, float y){
