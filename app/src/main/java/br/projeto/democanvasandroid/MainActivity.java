@@ -4,11 +4,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity {
 
     private TelaView tela;
     private Button btSalva;
+    private Switch btZoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,5 +28,19 @@ public class MainActivity extends AppCompatActivity {
                 tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
             }
         });
+
+        btZoom = (Switch) findViewById(R.id.btZoom);
+
+        btZoom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    tela.setZoom(true);
+                } else {
+                    tela.setZoom(false);
+                }
+            }
+        });
+
     }
 }

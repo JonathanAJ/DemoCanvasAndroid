@@ -8,10 +8,8 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +18,8 @@ import br.projeto.democanvasandroid.model.Circulo;
 
 public class TelaView extends View {
 
-    private boolean inicial = true;
+    private boolean circInicial = true;
+    private boolean zoom = false;
 
     private Paint paintCirc;
     private Paint paintLine;
@@ -29,17 +28,27 @@ public class TelaView extends View {
     private Iterator<Circulo> circIt;
     private Drawable img;
 
+    private float yImg = 0;
+
     /**
      *
      * getters e setters
      */
 
-    public boolean isInicial() {
-        return inicial;
+    public boolean isCircInicial() {
+        return circInicial;
     }
 
-    public void setInicial(boolean inicial) {
-        this.inicial = inicial;
+    public void setCircInicial(boolean circInicial) {
+        this.circInicial = circInicial;
+    }
+
+    public boolean isZoom() {
+        return zoom;
+    }
+
+    public void setZoom(boolean zoom) {
+        this.zoom = zoom;
     }
 
     public Circulo getCirculo() {
@@ -48,6 +57,14 @@ public class TelaView extends View {
 
     public void setCirculo(Circulo circulo) {
         this.circulo = circulo;
+    }
+
+    public float getyImg() {
+        return yImg;
+    }
+
+    public void setyImg(float yImg) {
+        this.yImg = yImg;
     }
 
     /**
@@ -63,10 +80,11 @@ public class TelaView extends View {
     public TelaView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
+
         TypedArray typedArray = null;
         try{
-            typedArray = context.obtainStyledAttributes(attrs, R.styleable.TelaView, 0, 0);
-            img = typedArray.getDrawable(R.styleable.TelaView_imgDrawable);
+            typedArray = context.obtainStyledAttributes(attrs, R.styleable.TelaView);
+            img = typedArray.getDrawable(R.styleable.TelaView_img_drawable);
 
         } finally {
             typedArray.recycle();
@@ -84,14 +102,14 @@ public class TelaView extends View {
      */
 
     private void init(Context context) {
+
         paintCirc = new Paint();
         paintCirc.setAntiAlias(true);
-        paintCirc.setColor(Color.rgb(240, 0, 0));
-
+        paintCirc.setColor(Color.WHITE);
 
         paintLine = new Paint();
         paintLine.setAntiAlias(true);
-        paintLine.setColor(Color.rgb(240, 0, 0));
+        paintLine.setColor(Color.RED);
 
         circulo = new Circulo();
         circulo.setX(0);
@@ -108,26 +126,39 @@ public class TelaView extends View {
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
-        desenhaImagem(canvas, img);
-        if(inicial) {
+
+        canvas.drawColor(Color.BLACK);
+        desenhaImagem(canvas, img, getyImg());
+
+        if(circInicial) {
+            /**
+             * Desenha círculo circInicial em 50% da tela
+             */
             circulo.setX((float) (getWidth()*0.5));
             circulo.setY((float) (getHeight()*0.5));
-            inicial = false;
+            circInicial = false;
         }
+
         circIt = listCirc.iterator();
         int num = 1;
         Circulo circuloTmp = null;
         while(circIt.hasNext()) {
             Circulo novoCirc = circIt.next();
+
             if(num%2 == 0){
                 Log.i(" Coords : ", "DRAW LINE");
                 desenhaLinha(canvas, circuloTmp.getX(), circuloTmp.getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
             }
+
+            paintCirc.setColor(Color.RED);
             desenhaCirculo(canvas, novoCirc, paintCirc);
             circuloTmp = novoCirc;
+
             Log.i(" Coords : ", "Pos = " + num + " -- x = " + novoCirc.getX() + " -- y =" + novoCirc.getY());
             num++;
         }
+
+        paintCirc.setColor(Color.BLUE);
         desenhaCirculo(canvas, circulo, paintCirc);
     }
 
@@ -138,16 +169,26 @@ public class TelaView extends View {
      */
 
     public void desenhaCirculo(Canvas canvas, Circulo circulo, Paint paintCirc){
-        canvas.drawCircle(circulo.getX(), circulo.getY(), 7, paintCirc);
+        /**
+         * Raio recebe 2,5% da tela. Ocupando 5% da mesma.
+         */
+        float raio = (float) (canvas.getWidth()*0.025);
+        canvas.drawCircle(circulo.getX(), circulo.getY(), raio, paintCirc);
     }
 
     public void desenhaLinha(Canvas canvas, float xStart, float yStart, float xStop, float yStop, Paint paintLine){
+        paintLine.setStrokeWidth(3);
         canvas.drawLine(xStart, yStart, xStop, yStop, paintLine);
     }
 
-    public void desenhaImagem(Canvas canvas, Drawable d){
+    public void desenhaImagem(Canvas canvas, Drawable d, float yImg){
+        // calcula centro
+        int larguraCanvas = canvas.getWidth();
+        int larguraImagem = d.getMinimumWidth();
+        int centro = (larguraCanvas/2) - (larguraImagem/2);
 
-        d.setBounds(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
+        // left, top, right, bottom.
+        d.setBounds(centro, (int) (yImg - (d.getMinimumHeight()/2)), d.getMinimumWidth() + centro, (int) (d.getMinimumHeight() + (yImg - (d.getMinimumHeight()/2))));
         d.draw(canvas);
     }
 
@@ -157,7 +198,7 @@ public class TelaView extends View {
         circuloSave.setY(y);
         Log.i("Coords circuloSave : ", circuloSave.getX() + " -- " + circuloSave.getY());
         listCirc.add(circuloSave);
-        inicial = true;
+        circInicial = true;
         invalidate();
     }
 
@@ -171,13 +212,21 @@ public class TelaView extends View {
     public boolean onTouchEvent (MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                circulo.setX(event.getX());
-                circulo.setY(event.getY());
+                if(isZoom()){
+                    setyImg(event.getY());
+                }else{
+                    circulo.setX(event.getX());
+                    circulo.setY(event.getY());
+                }
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                circulo.setX(event.getX());
-                circulo.setY(event.getY());
+                if(isZoom()){
+                    setyImg(event.getY());
+                }else{
+                    circulo.setX(event.getX());
+                    circulo.setY(event.getY());
+                }
                 invalidate();
                 break;
         }

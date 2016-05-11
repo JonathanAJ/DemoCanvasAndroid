@@ -11,13 +11,28 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="5">
+
+        <Switch
+            android:id="@+id/btZoom"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Zoom"
+            android:layout_gravity="right" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_weight="1">
 
         <br.projeto.democanvasandroid.TelaView
             android:id="@+id/telaView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:imgDrawable="@drawable/rayx"/>
+            app:img_drawable="@drawable/rayx"/>
 
     </LinearLayout>
 
