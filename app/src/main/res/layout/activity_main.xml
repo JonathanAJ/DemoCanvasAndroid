@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="br.projeto.democanvasandroid.MainActivity">
+    tools:context=".controller.MainActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <br.projeto.democanvasandroid.TelaView
+        <br.projeto.democanvasandroid.controller.TelaView
             android:id="@+id/telaView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

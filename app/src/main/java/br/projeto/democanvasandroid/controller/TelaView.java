@@ -1,4 +1,4 @@
-package br.projeto.democanvasandroid;
+package br.projeto.democanvasandroid.controller;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,6 +14,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.model.Circulo;
 
 public class TelaView extends View {
