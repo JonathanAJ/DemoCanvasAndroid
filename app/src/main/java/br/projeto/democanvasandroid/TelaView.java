@@ -126,39 +126,63 @@ public class TelaView extends View {
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
-
+        /**
+         * Desenha fundo e imagem antes de tudo.
+         * Imagem recebe o yImg.
+         */
         canvas.drawColor(Color.BLACK);
         desenhaImagem(canvas, img, getyImg());
 
+        /**
+         * Desenha círculo circInicial em 50% da tela
+         */
         if(circInicial) {
-            /**
-             * Desenha círculo circInicial em 50% da tela
-             */
             circulo.setX((float) (getWidth()*0.5));
             circulo.setY((float) (getHeight()*0.5));
             circInicial = false;
         }
 
+        /**
+         * @circIt : lista de Círculos que passará por uma iteração.
+         * @circuloTmpAntPar : cria um círculo temporário para receber o valor da posiçao do anterior sempre par.
+         * @circuloTmp1 : cria um círculo temporário para receber o valor da posiçao do circulo 1 par.
+         * @circuloTmp2 : cria um círculo temporário para receber o valor da posiçao do circulo 2 par.
+         * @num : cria um inteiro que representará a posição dos Circulos que criam a reta comum.
+         * @num2 : cria um inteiro que representará a posição dos Circulos que criam a reta perpendicular.
+         */
         circIt = listCirc.iterator();
-        int num = 1;
-        Circulo circuloTmp = null;
+        Circulo circuloTmpAntPar = null;
+        Circulo circuloTmpAnt1 = null;
+        Circulo circuloTmpAnt2 = null;
+        int num1 = 1;
+        int num2 = 1;
         while(circIt.hasNext()) {
             Circulo novoCirc = circIt.next();
 
-            if(num%2 == 0){
+            if(num1%2 == 0){
                 Log.i(" Coords : ", "DRAW LINE");
-                desenhaLinha(canvas, circuloTmp.getX(), circuloTmp.getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
+                desenhaLinha(canvas, circuloTmpAntPar.getX(), circuloTmpAntPar.getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
+
+                if(num2%2 == 0){
+                    circuloTmpAnt2 = novoCirc;
+                    Log.i(" Coords : ", "DRAW LINE 2");
+                    desenhaLinha(canvas, circuloTmpAnt1.getX(), circuloTmpAnt1.getY(), circuloTmpAnt2.getX(), circuloTmpAnt2.getY(), paintLine);
+                }
+
+                circuloTmpAnt1 = novoCirc;
+                num2++;
             }
 
             paintCirc.setColor(Color.RED);
             desenhaCirculo(canvas, novoCirc, paintCirc);
-            circuloTmp = novoCirc;
 
-            Log.i(" Coords : ", "Pos = " + num + " -- x = " + novoCirc.getX() + " -- y =" + novoCirc.getY());
-            num++;
+            circuloTmpAntPar = novoCirc;
+
+            Log.i(" Coords : ", "Pos = " + num1 + " -- x = " + novoCirc.getX() + " -- y =" + novoCirc.getY());
+            num1++;
         }
 
-        paintCirc.setColor(Color.BLUE);
+        paintCirc.setColor(Color.YELLOW);
         desenhaCirculo(canvas, circulo, paintCirc);
     }
 
