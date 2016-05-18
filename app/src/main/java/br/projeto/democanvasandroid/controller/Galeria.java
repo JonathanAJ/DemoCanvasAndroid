@@ -1,5 +1,6 @@
 package br.projeto.democanvasandroid.controller;
 
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,10 @@ public class Galeria extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_galeria);
+
+        ViewPager galeria = (ViewPager) findViewById(R.id.galeria);
+        GaleriaPage adapter = new GaleriaPage(this);
+        galeria.setAdapter(adapter);
 
         listaImagens();
     }
