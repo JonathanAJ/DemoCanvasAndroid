@@ -2,12 +2,14 @@ package br.projeto.democanvasandroid.controller;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.gesture.Gesture;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -212,10 +214,13 @@ public class TelaView extends View {
         // calcula centro
         int larguraCanvas = canvas.getWidth();
         int larguraImagem = d.getMinimumWidth();
-        int centro = (larguraCanvas/2) - (larguraImagem/2);
 
+        int esquerdo = (larguraCanvas/2) - (larguraImagem/2);
+        int topo = (int) (yImg - (d.getMinimumHeight()/2));
+        int direito = d.getMinimumWidth() + esquerdo;
+        int baixo = (int) (d.getMinimumHeight() + (yImg - (d.getMinimumHeight()/2)));
         // left, top, right, bottom.
-        d.setBounds(centro, (int) (yImg - (d.getMinimumHeight()/2)), d.getMinimumWidth() + centro, (int) (d.getMinimumHeight() + (yImg - (d.getMinimumHeight()/2))));
+        d.setBounds(esquerdo, topo, direito, baixo);
         d.draw(canvas);
     }
 
@@ -248,7 +253,10 @@ public class TelaView extends View {
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
+
                 if(isZoom()){
+
+                    Log.i("Coords zoom : ", "y = "+event.getY());
                     setyImg(event.getY());
                 }else{
                     circulo.setX(event.getX());
@@ -259,4 +267,5 @@ public class TelaView extends View {
         }
         return true;
     }
+
 }
