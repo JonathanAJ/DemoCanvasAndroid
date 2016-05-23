@@ -145,46 +145,48 @@ public class TelaView extends View {
 
         /**
          * @circIt : lista de Círculos que passará por uma iteração.
-         * @circuloTmpAntPar : cria um círculo temporário para receber o valor da posiçao do anterior sempre par.
-         * @circuloTmp1 : cria um círculo temporário para receber o valor da posiçao do circulo 1 par.
-         * @circuloTmp2 : cria um círculo temporário para receber o valor da posiçao do circulo 2 par.
-         * @num : cria um inteiro que representará a posição dos Circulos que criam a reta comum.
-         * @num2 : cria um inteiro que representará a posição dos Circulos que criam a reta perpendicular.
+         * @num : cria um inteiro que representará a posição dos Circulos que criam as retas.
          */
         circIt = listCirc.iterator();
-        Circulo circuloTmpAntPar = null;
-        Circulo circuloTmpAnt1 = null;
-        Circulo circuloTmpAnt2 = null;
-        int num1 = 1;
-        int num2 = 1;
+        int num = 1;
         while(circIt.hasNext()) {
+            /**
+             * Recebe valor do círculo da iteração
+             */
             Circulo novoCirc = circIt.next();
 
-            if(num1%2 == 0){
-                Log.i(" Coords : ", "DRAW LINE");
-                desenhaLinha(canvas, circuloTmpAntPar.getX(), circuloTmpAntPar.getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
-
-                if(num2%2 == 0){
-                    circuloTmpAnt2 = novoCirc;
-                    Log.i(" Coords : ", "DRAW LINE 2");
-                    desenhaLinha(canvas, circuloTmpAnt1.getX(), circuloTmpAnt1.getY(), circuloTmpAnt2.getX(), circuloTmpAnt2.getY(), paintLine);
-                }
-
-                circuloTmpAnt1 = novoCirc;
-                num2++;
+            switch(num){
+                case 3 :
+                    /**
+                     * Desenha retas saindo dos círculos 0 e 1 (primeiro e segundo) em direção ao novo círculo criado.
+                     */
+                    desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
+                    desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
+                    break;
+                case 5 :
+                    /**
+                     * Desenha retas saindo do círculo 3 (quarto) em direção ao novo círculo criado.
+                     */
+                    desenhaLinha(canvas, listCirc.get(3).getX(), listCirc.get(3).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
+                    break;
             }
 
+            /**
+             * Desenha valor do círculo da iteração
+             */
             paintCirc.setColor(Color.RED);
             desenhaCirculo(canvas, novoCirc, paintCirc);
 
-            circuloTmpAntPar = novoCirc;
-
-            Log.i(" Coords : ", "Pos = " + num1 + " -- x = " + novoCirc.getX() + " -- y =" + novoCirc.getY());
-            num1++;
+            Log.i(" Coords : ", "Pos = " + num + " -- x = " + novoCirc.getX() + " -- y =" + novoCirc.getY());
+            num++;
         }
-
-        paintCirc.setColor(Color.YELLOW);
-        desenhaCirculo(canvas, circulo, paintCirc);
+        /**
+         * Se chegar no limite de círculos que devem ser criados (5), não desenhe nada.
+         */
+        if(num <= 5){
+            paintCirc.setColor(Color.YELLOW);
+            desenhaCirculo(canvas, circulo, paintCirc);
+        }
     }
 
     /**
