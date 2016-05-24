@@ -68,6 +68,14 @@ public class TelaView extends View {
         this.yImg = yImg;
     }
 
+    public Drawable getImg() {
+        return img;
+    }
+
+    public void setImg(Drawable img) {
+        this.img = img;
+    }
+
     /**
      *
      * Construtores padrões para criar uma Custom View
@@ -85,7 +93,7 @@ public class TelaView extends View {
         TypedArray typedArray = null;
         try{
             typedArray = context.obtainStyledAttributes(attrs, R.styleable.TelaView);
-            img = typedArray.getDrawable(R.styleable.TelaView_img_drawable);
+            setImg(typedArray.getDrawable(R.styleable.TelaView_img_drawable));
 
         } finally {
             typedArray.recycle();
@@ -132,7 +140,7 @@ public class TelaView extends View {
          * Imagem recebe o yImg.
          */
         canvas.drawColor(Color.BLACK);
-        desenhaImagem(canvas, img, getyImg());
+        desenhaImagem(canvas, getImg(), getyImg());
 
         /**
          * Desenha círculo circInicial em 50% da tela

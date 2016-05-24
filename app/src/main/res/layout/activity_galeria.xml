@@ -9,4 +9,26 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="br.projeto.democanvasandroid.controller.Galeria">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/galeria"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+
+        <Button
+            android:id="@+id/bt_seleciona_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            android:text="Selecionar Imagem"/>
+
+    </LinearLayout>
+
 </RelativeLayout>

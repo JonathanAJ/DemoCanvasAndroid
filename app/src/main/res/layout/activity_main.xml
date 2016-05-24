@@ -17,7 +17,7 @@
             android:id="@+id/btZoom"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Zoom"
+            android:text="Posicionar"
             android:layout_gravity="right" />
 
     </LinearLayout>
