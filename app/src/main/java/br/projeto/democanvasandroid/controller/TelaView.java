@@ -275,5 +275,4 @@ public class TelaView extends View {
         }
         return true;
     }
-
 }
