@@ -1,8 +1,11 @@
 package br.projeto.democanvasandroid.controller;
 
+<<<<<<< HEAD
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+=======
+>>>>>>> 1ae24ee1ba5df17263f5bb83d43bd09c52648664
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +43,7 @@ public class Galeria extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_galeria);
 
+<<<<<<< HEAD
         galeria = (ViewPager) findViewById(R.id.galeria);
         galeriaAdapter =  new GaleriaAdapter(this, bitmapList);
 
@@ -63,6 +67,11 @@ public class Galeria extends AppCompatActivity {
 
             }
         });
+=======
+        ViewPager galeria = (ViewPager) findViewById(R.id.galeria);
+        GaleriaPage adapter = new GaleriaPage(this);
+        galeria.setAdapter(adapter);
+>>>>>>> 1ae24ee1ba5df17263f5bb83d43bd09c52648664
 
         listaImagens();
     }
