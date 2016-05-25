@@ -221,12 +221,12 @@ public class TelaView extends View {
     public void desenhaImagem(Canvas canvas, Drawable d, float yImg){
         // calcula centro
         int larguraCanvas = canvas.getWidth();
-        int larguraImagem = d.getMinimumWidth();
+        int larguraImagem = d.getIntrinsicWidth();
 
         int esquerdo = (larguraCanvas/2) - (larguraImagem/2);
-        int topo = (int) (yImg - (d.getMinimumHeight()/2));
-        int direito = d.getMinimumWidth() + esquerdo;
-        int baixo = (int) (d.getMinimumHeight() + (yImg - (d.getMinimumHeight()/2)));
+        int topo = (int) (yImg);
+        int direito = d.getIntrinsicWidth() + esquerdo;
+        int baixo = (int) (yImg + (d.getIntrinsicHeight()));
         // left, top, right, bottom.
         d.setBounds(esquerdo, topo, direito, baixo);
         d.draw(canvas);
@@ -248,12 +248,19 @@ public class TelaView extends View {
      * tanto quanto pressiona DOWN, tanto quanto segura MOVE
      */
 
+    float down;
+    float resultScroll;
+
     @Override
     public boolean onTouchEvent (MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if(isZoom()){
-                    setyImg(event.getY());
+
+                    System.out.println(" DOWN " + event.getY());
+
+                    down = event.getY();
+
                 }else{
                     circulo.setX(event.getX());
                     circulo.setY(event.getY());
@@ -264,15 +271,32 @@ public class TelaView extends View {
 
                 if(isZoom()){
 
-                    Log.i("Coords zoom : ", "y = "+event.getY());
-                    setyImg(event.getY());
+                    int baixo = (int) (yImg + (getImg().getIntrinsicHeight()));
+
+                    resultScroll = event.getY() - down;
+
+                    float imageMove = getyImg() + (resultScroll/10);
+
+                    System.out.println(" MOVE " + event.getY());
+
+                    System.out.println(" CALC MOVE " + resultScroll);
+
+                    System.out.println(" IMG ALT = " + baixo);
+
+                    System.out.println(" CANVAS ALT = " + getHeight());
+
+                    setyImg(imageMove);
+
+
                 }else{
                     circulo.setX(event.getX());
                     circulo.setY(event.getY());
+
                 }
                 invalidate();
                 break;
         }
         return true;
     }
+
 }

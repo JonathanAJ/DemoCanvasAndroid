@@ -9,9 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.support.v4.view.GestureDetectorCompat;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -28,10 +25,7 @@ import java.util.List;
 import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.model.Imagem;
 
-public class Galeria extends AppCompatActivity implements GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener {
-
-    private GestureDetectorCompat gesture;
+public class Galeria extends AppCompatActivity {
 
     private DatabaseReference url = FirebaseDatabase.getInstance().getReference();
 
@@ -46,9 +40,6 @@ public class Galeria extends AppCompatActivity implements GestureDetector.OnGest
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_galeria);
-
-        this.gesture = new GestureDetectorCompat(this, this);
-        gesture.setOnDoubleTapListener(this);
 
         galeria = (ViewPager) findViewById(R.id.galeria);
         galeriaAdapter =  new GaleriaAdapter(this, bitmapList);
@@ -120,57 +111,5 @@ public class Galeria extends AppCompatActivity implements GestureDetector.OnGest
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         img.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
-    }
-
-    @Override
-    public boolean onTouchEvent (MotionEvent event) {
-        this.gesture.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        System.out.println("SCROOOOOLL");
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        return false;
     }
 }
