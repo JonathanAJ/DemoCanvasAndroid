@@ -21,6 +21,8 @@ import br.projeto.democanvasandroid.model.Circulo;
 
 public class TelaView extends View {
 
+    final private int SLOW_SLIDE = 10;
+
     private boolean circInicial = true;
     private boolean zoom = false;
 
@@ -210,7 +212,15 @@ public class TelaView extends View {
          * Raio recebe 2,5% da tela. Ocupando 5% da mesma.
          */
         float raio = (float) (canvas.getWidth()*0.025);
-        canvas.drawCircle(circulo.getX(), circulo.getY(), raio, paintCirc);
+
+        if(isZoom()) {
+            circulo.setY(circulo.getY() + (resultScroll / SLOW_SLIDE));
+            canvas.drawCircle(circulo.getX(), circulo.getY(), raio, paintCirc);
+        }else {
+
+            canvas.drawCircle(circulo.getX(), circulo.getY(), raio, paintCirc);
+
+        }
     }
 
     public void desenhaLinha(Canvas canvas, float xStart, float yStart, float xStop, float yStop, Paint paintLine){
@@ -261,12 +271,15 @@ public class TelaView extends View {
 
                     down = event.getY();
 
+                    resultScroll = 0;
+
                 }else{
                     circulo.setX(event.getX());
                     circulo.setY(event.getY());
                 }
                 invalidate();
                 break;
+
             case MotionEvent.ACTION_MOVE:
 
                 if(isZoom()){
@@ -275,22 +288,42 @@ public class TelaView extends View {
 
                     resultScroll = event.getY() - down;
 
-                    float imageMove = getyImg() + (resultScroll/10);
+                    float imageMove = getyImg() + (resultScroll/SLOW_SLIDE);
 
                     System.out.println(" MOVE " + event.getY());
+
+                    /*System.out.println(" IMAGE_MOVE " + imageMove);
 
                     System.out.println(" CALC MOVE " + resultScroll);
 
                     System.out.println(" IMG ALT = " + baixo);
 
-                    System.out.println(" CANVAS ALT = " + getHeight());
+                    System.out.println(" CANVAS ALT = " + getHeight());*/
 
                     setyImg(imageMove);
+                    invalidate();
 
 
                 }else{
                     circulo.setX(event.getX());
                     circulo.setY(event.getY());
+
+                }
+                invalidate();
+                break;
+
+            case MotionEvent.ACTION_UP:
+                
+                if(isZoom()) {
+
+                    resultScroll = event.getY() - down;
+
+                    float imageMove = getyImg() + (resultScroll / SLOW_SLIDE);
+
+                    System.out.println(" UP ");
+
+                    setyImg(imageMove);
+                } else {
 
                 }
                 invalidate();
