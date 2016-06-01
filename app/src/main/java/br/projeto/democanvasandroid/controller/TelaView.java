@@ -230,16 +230,48 @@ public class TelaView extends View {
 
     public void desenhaImagem(Canvas canvas, Drawable d, float yImg){
         // calcula centro
-        int larguraCanvas = canvas.getWidth();
-        int larguraImagem = d.getIntrinsicWidth();
+        float larguraCanvas = canvas.getWidth();
+        float larguraImagem = d.getIntrinsicWidth();
+        float alturaImagem = d.getIntrinsicHeight();
 
-        int esquerdo = (larguraCanvas/2) - (larguraImagem/2);
+/*//        int esquerdo = (larguraCanvas/2) - (larguraImagem/2);
+        int esquerdo = 0;
         int topo = (int) (yImg);
-        int direito = d.getIntrinsicWidth() + esquerdo;
-        int baixo = (int) (yImg + (d.getIntrinsicHeight()));
+        int direito = d.getIntrinsicWidth();
+//        int direito = larguraCanvas;
+        int baixo = (int) (yImg + (d.getMinimumHeight()));*/
+
+        int topo = (int) (yImg);
+        float res = calculaProporcao(larguraCanvas, larguraImagem);
+        int baixo = (int) (yImg + (alturaImagem + (alturaImagem*res)));
+
         // left, top, right, bottom.
-        d.setBounds(esquerdo, topo, direito, baixo);
+        d.setBounds(0, topo, (int) larguraCanvas, baixo);
         d.draw(canvas);
+
+        System.out.println("largura float: " + larguraCanvas);
+        System.out.println("largura int: " + (int) larguraCanvas);
+
+        System.out.println("baixo float: " + (yImg + (alturaImagem + (alturaImagem*res))));
+        System.out.println("baixo int: " + baixo);
+
+        System.out.println("altura" + alturaImagem);
+
+        System.out.println("altura" + alturaImagem*res);
+
+        System.out.println("altura res " + (alturaImagem + (alturaImagem*res)));
+    }
+
+    public float calculaProporcao(float larguraCanvas, float larguraImagem){
+        float dimensionado = larguraCanvas - larguraImagem;
+
+        System.out.println("dimensionado " + dimensionado);
+
+        System.out.println("dimensionado % " + (dimensionado*100)/larguraCanvas);
+
+        System.out.println("dimensionado decimal " + ((dimensionado*100)/larguraCanvas)/100);
+
+        return ((dimensionado*100)/larguraCanvas)/100;
     }
 
     public void salvaListaCirculo(float x, float y){
