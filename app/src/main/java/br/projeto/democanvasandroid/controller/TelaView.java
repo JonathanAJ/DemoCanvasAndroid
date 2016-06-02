@@ -147,6 +147,7 @@ public class TelaView extends View {
          * Desenha fundo e imagem antes de tudo.
          * Imagem recebe o yImg.
          */
+        canvas.translate(0, scrollY);
         canvas.drawColor(Color.BLACK);
         desenhaImagem(canvas, getImg(), getyImg());
 
@@ -218,7 +219,6 @@ public class TelaView extends View {
         float raio = (float) (canvas.getWidth()*0.025);
 
         if(isZoom()) {
-            circulo.setY(circulo.getY() + (resultScroll / SLOW_SLIDE));
             canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);
         }else {
 
@@ -245,14 +245,13 @@ public class TelaView extends View {
 //        int direito = larguraCanvas;
         int baixo = (int) (yImg + (d.getMinimumHeight()));*/
 
-        int topo = (int) (yImg);
 //        float res = calculaProporcao(larguraCanvas, larguraImagem);
 //        int baixo = (int) (yImg + (alturaImagem + (alturaImagem*res)));
         float aspectRatio = getAspectRatio(alturaImagem, larguraImagem);
-        int baixo = Math.round(yImg +(larguraCanvas*aspectRatio));
+        int baixo = Math.round(larguraCanvas*aspectRatio);
 
         // left, top, right, bottom.
-        d.setBounds(0, topo, (int) larguraCanvas, baixo);
+        d.setBounds(0, 0, (int) larguraCanvas, baixo);
         d.draw(canvas);
     }
 
@@ -281,8 +280,9 @@ public class TelaView extends View {
      * tanto quanto pressiona DOWN, tanto quanto segura MOVE
      */
 
-    float down;
-    float resultScroll;
+    private float inicioY = 0;
+    private float scrollY = 0;
+    private float anteriorScrollY = 0;
 
     @Override
     public boolean onTouchEvent (MotionEvent event) {
@@ -292,13 +292,13 @@ public class TelaView extends View {
 
                     System.out.println(" DOWN " + event.getY());
 
-                    down = event.getY();
+                    inicioY = event.getY() - anteriorScrollY;
 
-                    resultScroll = 0;
+                    scrollY = 0;
 
                 }else{
                     circulo.setX(event.getX());
-                    circulo.setY(event.getY());
+                    circulo.setY(event.getY() - scrollY);
                     invalidate();
                 }
                 break;
@@ -309,15 +309,15 @@ public class TelaView extends View {
 
                     float baixo = getyImg() + getImg().getIntrinsicHeight();
 
-                    resultScroll = event.getY() - down;
+                    scrollY = event.getY() - inicioY;
 
-                    float imageMove = getyImg() + (resultScroll/SLOW_SLIDE);
+                    float imageMove = getyImg() + (scrollY/SLOW_SLIDE);
 
                     System.out.println(" MOVE " + event.getY());
 
                     System.out.println(" IMAGE_MOVE " + imageMove);
 
-                    System.out.println(" CALC MOVE " + resultScroll);
+                    System.out.println(" CALC MOVE " + scrollY);
 
                     System.out.println(" IMG ALT = " + baixo);
 
@@ -336,7 +336,7 @@ public class TelaView extends View {
 
                 }else{
                     circulo.setX(event.getX());
-                    circulo.setY(event.getY());
+                    circulo.setY(event.getY() - scrollY);
 
                 }
                 invalidate();
@@ -346,13 +346,8 @@ public class TelaView extends View {
                 
                 if(isZoom()) {
 
-                    resultScroll = event.getY() - down;
+                    anteriorScrollY = scrollY;
 
-                    float imageMove = getyImg() + (resultScroll / SLOW_SLIDE);
-
-                    System.out.println(" UP ");
-
-                    setyImg(imageMove);
                 } else {
 
                 }
