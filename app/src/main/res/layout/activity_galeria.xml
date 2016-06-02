@@ -8,9 +8,34 @@
     tools:context="br.projeto.democanvasandroid.controller.Galeria">
 
     <LinearLayout
+        android:id="@+id/layoutLoad"
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <ImageView
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/progress"/>
+
+        <TextView
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="30dp"
+            android:text="Carregando imagens da internet..."
+            android:textSize="27sp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutPrincipal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/galeria"
@@ -19,6 +44,7 @@
             android:layout_height="match_parent">
 
         </android.support.v4.view.ViewPager>
+
 
         <Button
             android:id="@+id/bt_seleciona_img"

@@ -11,6 +11,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,8 @@ public class Galeria extends AppCompatActivity {
     private GaleriaAdapter galeriaAdapter;
     private Button btSelecionaImg;
     private List<Bitmap> bitmapList = new ArrayList<Bitmap>();
+    private LinearLayout layoutLoad;
+    private LinearLayout layoutPrincipal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +47,10 @@ public class Galeria extends AppCompatActivity {
 
         galeria = (ViewPager) findViewById(R.id.galeria);
         galeriaAdapter =  new GaleriaAdapter(this, bitmapList);
-
         galeria.setAdapter(galeriaAdapter);
+
+        layoutLoad = (LinearLayout) findViewById(R.id.layoutLoad);
+        layoutPrincipal = (LinearLayout) findViewById(R.id.layoutPrincipal);
 
         btSelecionaImg = (Button) findViewById(R.id.bt_seleciona_img);
         btSelecionaImg.setOnClickListener(new View.OnClickListener() {
@@ -72,10 +78,9 @@ public class Galeria extends AppCompatActivity {
         url.child("Imagens").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 bitmapList.clear();
-
-                System.out.println("Existem " + dataSnapshot.getChildrenCount() + " imagens");
+                layoutLoad.setVisibility(View.GONE);
+                layoutPrincipal.setVisibility(View.VISIBLE);
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Imagem img = postSnapshot.getValue(Imagem.class);
