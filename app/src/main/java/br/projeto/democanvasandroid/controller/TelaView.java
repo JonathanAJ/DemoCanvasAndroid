@@ -6,6 +6,7 @@ import android.gesture.Gesture;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -245,36 +246,23 @@ public class TelaView extends View {
         int baixo = (int) (yImg + (d.getMinimumHeight()));*/
 
         int topo = (int) (yImg);
-        float res = calculaProporcao(larguraCanvas, larguraImagem);
-        int baixo = (int) (yImg + (alturaImagem + (alturaImagem*res)));
+//        float res = calculaProporcao(larguraCanvas, larguraImagem);
+//        int baixo = (int) (yImg + (alturaImagem + (alturaImagem*res)));
+        float aspectRatio = getAspectRatio(alturaImagem, larguraImagem);
+        int baixo = Math.round(yImg +(larguraCanvas*aspectRatio));
 
         // left, top, right, bottom.
         d.setBounds(0, topo, (int) larguraCanvas, baixo);
         d.draw(canvas);
-
-        System.out.println("largura float: " + larguraCanvas);
-        System.out.println("largura int: " + (int) larguraCanvas);
-
-        System.out.println("baixo float: " + (yImg + (alturaImagem + (alturaImagem*res))));
-        System.out.println("baixo int: " + baixo);
-
-        System.out.println("altura " + alturaImagem);
-
-        System.out.println("altura a mais " + alturaImagem*res);
-
-        System.out.println("altura res " + (alturaImagem + (alturaImagem*res)));
     }
 
-    public float calculaProporcao(float larguraCanvas, float larguraImagem){
-        float dimensionado = larguraCanvas - larguraImagem;
+    public float getAspectRatio(float alturaImage, float larguraImagem){
+        /**
+         * Calcula AspectRatio da imagem
+         */
+        return alturaImage/larguraImagem;
 
-        System.out.println("dimensionado " + dimensionado);
 
-        System.out.println("dimensionado % " + (dimensionado * 100) / larguraCanvas);
-
-        System.out.println("dimensionado decimal " + ((dimensionado * 100) / larguraCanvas)/100);
-
-        return ((dimensionado*100)/larguraCanvas)/100;
     }
 
     public void salvaListaCirculo(float x, float y){
@@ -321,7 +309,7 @@ public class TelaView extends View {
 
                     float baixo = getyImg() + getImg().getIntrinsicHeight();
 
-                    resultScroll = event.getRawY() - down;
+                    resultScroll = event.getY() - down;
 
                     float imageMove = getyImg() + (resultScroll/SLOW_SLIDE);
 
