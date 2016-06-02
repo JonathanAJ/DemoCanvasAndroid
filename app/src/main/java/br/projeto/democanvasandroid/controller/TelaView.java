@@ -35,6 +35,8 @@ public class TelaView extends View {
 
     private float yImg = 0;
 
+    private float alturaCanvasGlobal;
+
     /**
      *
      * getters e setters
@@ -139,6 +141,7 @@ public class TelaView extends View {
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
+        alturaCanvasGlobal = getHeight();
         /**
          * Desenha fundo e imagem antes de tudo.
          * Imagem recebe o yImg.
@@ -215,10 +218,10 @@ public class TelaView extends View {
 
         if(isZoom()) {
             circulo.setY(circulo.getY() + (resultScroll / SLOW_SLIDE));
-            canvas.drawCircle(circulo.getX(), circulo.getY(), raio, paintCirc);
+            canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);
         }else {
 
-            canvas.drawCircle(circulo.getX(), circulo.getY(), raio, paintCirc);
+            canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);
 
         }
     }
@@ -255,9 +258,9 @@ public class TelaView extends View {
         System.out.println("baixo float: " + (yImg + (alturaImagem + (alturaImagem*res))));
         System.out.println("baixo int: " + baixo);
 
-        System.out.println("altura" + alturaImagem);
+        System.out.println("altura " + alturaImagem);
 
-        System.out.println("altura" + alturaImagem*res);
+        System.out.println("altura a mais " + alturaImagem*res);
 
         System.out.println("altura res " + (alturaImagem + (alturaImagem*res)));
     }
@@ -267,9 +270,9 @@ public class TelaView extends View {
 
         System.out.println("dimensionado " + dimensionado);
 
-        System.out.println("dimensionado % " + (dimensionado*100)/larguraCanvas);
+        System.out.println("dimensionado % " + (dimensionado * 100) / larguraCanvas);
 
-        System.out.println("dimensionado decimal " + ((dimensionado*100)/larguraCanvas)/100);
+        System.out.println("dimensionado decimal " + ((dimensionado * 100) / larguraCanvas)/100);
 
         return ((dimensionado*100)/larguraCanvas)/100;
     }
@@ -308,29 +311,36 @@ public class TelaView extends View {
                 }else{
                     circulo.setX(event.getX());
                     circulo.setY(event.getY());
+                    invalidate();
                 }
-                invalidate();
                 break;
 
             case MotionEvent.ACTION_MOVE:
 
                 if(isZoom()){
 
-                    int baixo = (int) (yImg + (getImg().getIntrinsicHeight()));
+                    float baixo = getyImg() + getImg().getIntrinsicHeight();
 
-                    resultScroll = event.getY() - down;
+                    resultScroll = event.getRawY() - down;
 
                     float imageMove = getyImg() + (resultScroll/SLOW_SLIDE);
 
                     System.out.println(" MOVE " + event.getY());
 
-                    /*System.out.println(" IMAGE_MOVE " + imageMove);
+                    System.out.println(" IMAGE_MOVE " + imageMove);
 
                     System.out.println(" CALC MOVE " + resultScroll);
 
                     System.out.println(" IMG ALT = " + baixo);
 
-                    System.out.println(" CANVAS ALT = " + getHeight());*/
+                    System.out.println(" CANVAS ALT = " + getHeight());
+
+                    /*float topo = getyImg();
+
+                    if(topo < 0){
+                        setyImg(0);
+
+                    }*/
 
                     setyImg(imageMove);
                     invalidate();
@@ -359,6 +369,9 @@ public class TelaView extends View {
 
                 }
                 invalidate();
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return true;
