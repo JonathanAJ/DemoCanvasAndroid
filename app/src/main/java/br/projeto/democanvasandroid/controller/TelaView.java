@@ -2,15 +2,12 @@ package br.projeto.democanvasandroid.controller;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.gesture.Gesture;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -21,28 +18,36 @@ import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.model.Circulo;
 
 public class TelaView extends View {
-
-    final private int SLOW_SLIDE = 10;
-
+    /**
+     * Flags
+     */
     private boolean circInicial = true;
     private boolean zoom = false;
 
+    /**
+     * Variáveis de Estilização
+     */
     private Paint paintCirc;
     private Paint paintLine;
+
+    /**
+     * Variáveis de componentes
+     */
     private Circulo circulo;
     private ArrayList<Circulo> listCirc;
     private Iterator<Circulo> circIt;
     private Drawable img;
 
-    private float yImg = 0;
-
-    private float alturaCanvasGlobal;
+    /**
+     * Variaveis de Posicionamento
+     */
+    private float inicioY = 0;
+    private float scrollY = 0;
+    private float anteriorScrollY = 0;
 
     /**
-     *
      * getters e setters
      */
-
     public boolean isCircInicial() {
         return circInicial;
     }
@@ -65,14 +70,6 @@ public class TelaView extends View {
 
     public void setCirculo(Circulo circulo) {
         this.circulo = circulo;
-    }
-
-    public float getyImg() {
-        return yImg;
-    }
-
-    public void setyImg(float yImg) {
-        this.yImg = yImg;
     }
 
     public Drawable getImg() {
@@ -142,14 +139,14 @@ public class TelaView extends View {
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
-        alturaCanvasGlobal = getHeight();
         /**
          * Desenha fundo e imagem antes de tudo.
-         * Imagem recebe o yImg.
+         * Translate é um método que posiciona toda a tela do canvas,
+         * no caso, receberá a posição do Scroll Y.
          */
         canvas.translate(0, scrollY);
         canvas.drawColor(Color.BLACK);
-        desenhaImagem(canvas, getImg(), getyImg());
+        desenhaImagem(canvas, getImg());
 
         /**
          * Desenha círculo circInicial em 50% da tela
@@ -232,21 +229,18 @@ public class TelaView extends View {
         canvas.drawLine(xStart, yStart, xStop, yStop, paintLine);
     }
 
-    public void desenhaImagem(Canvas canvas, Drawable d, float yImg){
+    /**
+     * Desenha a imagem da radiografia na tela.
+     */
+    public void desenhaImagem(Canvas canvas, Drawable d){
         // calcula centro
         float larguraCanvas = canvas.getWidth();
         float larguraImagem = d.getIntrinsicWidth();
         float alturaImagem = d.getIntrinsicHeight();
-
-/*//        int esquerdo = (larguraCanvas/2) - (larguraImagem/2);
-        int esquerdo = 0;
-        int topo = (int) (yImg);
-        int direito = d.getIntrinsicWidth();
-//        int direito = larguraCanvas;
-        int baixo = (int) (yImg + (d.getMinimumHeight()));*/
-
-//        float res = calculaProporcao(larguraCanvas, larguraImagem);
-//        int baixo = (int) (yImg + (alturaImagem + (alturaImagem*res)));
+        /**
+         * retorna o aspect ratio da imagem para calcular sua altura,
+         * multiplicando ele pela largura e arredondando.
+         */
         float aspectRatio = getAspectRatio(alturaImagem, larguraImagem);
         int baixo = Math.round(larguraCanvas*aspectRatio);
 
@@ -260,101 +254,66 @@ public class TelaView extends View {
          * Calcula AspectRatio da imagem
          */
         return alturaImage/larguraImagem;
-
-
     }
 
     public void salvaListaCirculo(float x, float y){
         Circulo circuloSave = new Circulo();
         circuloSave.setX(x);
         circuloSave.setY(y);
-        Log.i("Coords circuloSave : ", circuloSave.getX() + " -- " + circuloSave.getY());
         listCirc.add(circuloSave);
         circInicial = true;
         invalidate();
     }
 
     /**
-     *
-     * Evento de touch, muda as variáveis x e y,
-     * tanto quanto pressiona DOWN, tanto quanto segura MOVE
+     * Evento de touch para posicionamento e colocação dos pontos.
      */
-
-    private float inicioY = 0;
-    private float scrollY = 0;
-    private float anteriorScrollY = 0;
-
     @Override
     public boolean onTouchEvent (MotionEvent event) {
         switch (event.getAction()) {
+            // aperta o touch
             case MotionEvent.ACTION_DOWN:
+                /**
+                 * Verifica se a flag zoom está ligada e retorna o
+                 * ponto atual do DOWN menos o scroll anterior.
+                 */
                 if(isZoom()){
-
-                    System.out.println(" DOWN " + event.getY());
-
                     inicioY = event.getY() - anteriorScrollY;
-
                     scrollY = 0;
-
                 }else{
+                /**
+                 * Senão, recoloca o circulo em sua posicao atual, subtraindo o
+                 * valor do scroll.
+                 */
                     circulo.setX(event.getX());
                     circulo.setY(event.getY() - scrollY);
                     invalidate();
                 }
                 break;
-
+            // move o touch
             case MotionEvent.ACTION_MOVE:
-
+                /**
+                 * Valor do scroll recebe o valor atual do MOVE
+                 * subtraindo do DOWN inicioY.
+                 */
                 if(isZoom()){
-
-                    float baixo = getyImg() + getImg().getIntrinsicHeight();
-
                     scrollY = event.getY() - inicioY;
-
-                    float imageMove = getyImg() + (scrollY/SLOW_SLIDE);
-
-                    System.out.println(" MOVE " + event.getY());
-
-                    System.out.println(" IMAGE_MOVE " + imageMove);
-
-                    System.out.println(" CALC MOVE " + scrollY);
-
-                    System.out.println(" IMG ALT = " + baixo);
-
-                    System.out.println(" CANVAS ALT = " + getHeight());
-
-                    /*float topo = getyImg();
-
-                    if(topo < 0){
-                        setyImg(0);
-
-                    }*/
-
-                    setyImg(imageMove);
-                    invalidate();
-
-
                 }else{
                     circulo.setX(event.getX());
                     circulo.setY(event.getY() - scrollY);
-
                 }
                 invalidate();
                 break;
-
+            // solta o touch
             case MotionEvent.ACTION_UP:
-                
+                /**
+                 * Valor do Scroll Anterior recebe valor do Scroll quando
+                 * o usuário solta o touch.
+                 */
                 if(isZoom()) {
-
                     anteriorScrollY = scrollY;
-
-                } else {
-
                 }
                 invalidate();
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return true;
