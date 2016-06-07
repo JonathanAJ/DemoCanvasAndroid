@@ -176,6 +176,10 @@ public class TelaView extends View {
                      */
                     desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
                     desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
+                    /**
+                     * Desenha a perpendicular da segunda reta criada.
+                     */
+                    desenhaPerpendicular(canvas, listCirc.get(1), novoCirc, paintLine);
                     break;
                 case 5 :
                     /**
@@ -218,15 +222,54 @@ public class TelaView extends View {
         if(isZoom()) {
             canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);
         }else {
-
             canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);
-
         }
     }
 
     public void desenhaLinha(Canvas canvas, float xStart, float yStart, float xStop, float yStop, Paint paintLine){
         paintLine.setStrokeWidth(3);
         canvas.drawLine(xStart, yStart, xStop, yStop, paintLine);
+    }
+
+    public float getCoeficienteAngular(Circulo ponto1, Circulo ponto2){
+        // Equação reduzida da reta: y = mx + b;
+        // Coeficiente angular: (y² - y¹)/ (x² - x¹)
+        float coeficiente = ((ponto2.getY() - ponto1.getY()) / (ponto2.getX() - ponto1.getX()));
+        // negativo do recíproco
+        return (-1/(coeficiente));
+    }
+
+    public float getCoeficienteLinear(Circulo ponto1, Circulo ponto2){
+        // Retorna o coeficiente angular
+        float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
+        // Coeficiente linear: b = y - mx;
+        // Escolhe um dos pontos, no caso, o segundo;
+        return (ponto2.getY() - (coeficienteAngular * ponto2.getX()));
+    }
+
+    public float getYPerpendicular(Circulo ponto1, Circulo ponto2, float afastamento){
+        // Retorna o coeficiente linear
+        float coeficienteLinear = getCoeficienteLinear(ponto1, ponto2);
+        // Retorna o coeficiente angular
+        float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
+        // Equação reduzida da reta y = mx + b
+        return ((coeficienteAngular * ponto2.getX() + afastamento) + coeficienteLinear);
+    }
+
+    public void desenhaPerpendicular(Canvas canvas, Circulo ponto1, Circulo ponto2, Paint paintLine){
+        paintLine.setStrokeWidth(3);
+
+        float yPerpendicular = getYPerpendicular(ponto1, ponto2, 50);
+
+        float yPerpendicular2 = getYPerpendicular(ponto1, ponto2, -50);
+
+        /* Desenha uma reta saindo do segundo ponto até o
+           próximo ponto dependendo do X;
+        */
+        canvas.drawLine(ponto2.getX(), ponto2.getY(), ponto2.getX() + 50, yPerpendicular, paintLine);
+
+        canvas.drawLine(ponto2.getX(), ponto2.getY(), ponto2.getX() - 50, yPerpendicular2, paintLine);
+//        canvas.drawLine(ponto2.getX(), ponto2.getY(), -ponto2.getX(), yPerpendicular, paintLine);
     }
 
     /**
