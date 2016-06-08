@@ -19,6 +19,10 @@ import br.projeto.democanvasandroid.model.Circulo;
 
 public class TelaView extends View {
     /**
+     * Constantes
+     */
+    final private int AFASTAMENTO = 100;
+    /**
      * Flags
      */
     private boolean circInicial = true;
@@ -118,11 +122,12 @@ public class TelaView extends View {
 
         paintCirc = new Paint();
         paintCirc.setAntiAlias(true);
-        paintCirc.setColor(Color.WHITE);
+        paintCirc.setColor(Color.RED);
 
         paintLine = new Paint();
         paintLine.setAntiAlias(true);
         paintLine.setColor(Color.RED);
+        paintLine.setStrokeWidth(3);
 
         circulo = new Circulo();
         circulo.setX(0);
@@ -135,7 +140,6 @@ public class TelaView extends View {
      *
      * Método onDraw desenha na tela
      */
-
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
@@ -169,33 +173,41 @@ public class TelaView extends View {
              */
             Circulo novoCirc = circIt.next();
 
-            switch(num){
-                case 3 :
-                    /**
-                     * Desenha retas saindo dos círculos 0 e 1 (primeiro e segundo) em direção ao novo círculo criado.
-                     */
-                    desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
-                    desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
-                    /**
-                     * Desenha a perpendicular da segunda reta criada.
-                     */
-                    desenhaPerpendicular(canvas, listCirc.get(1), novoCirc, paintLine);
-                    break;
-                case 5 :
-                    /**
-                     * Desenha retas saindo do círculo 3 (quarto) em direção ao novo círculo criado.
-                     */
-                    desenhaLinha(canvas, listCirc.get(3).getX(), listCirc.get(3).getY(), novoCirc.getX(), novoCirc.getY(), paintLine);
-                    break;
-            }
-
             /**
              * Desenha valor do círculo da iteração
              */
             paintCirc.setColor(Color.RED);
             desenhaCirculo(canvas, novoCirc, paintCirc);
 
-            Log.i(" Coords : ", "Pos = " + num + " -- x = " + novoCirc.getX() + " -- y =" + novoCirc.getY());
+            /**
+             * Dependendo do valor atual do número da iteração, faça
+             * as retas mediante o valor das determinadas posições
+             * nos círculos criados.
+             */
+            switch(num){
+                case 3 :
+                    /**
+                     * Desenha retas saindo dos círculos 0 e 1 (primeiro e segundo) em direção ao novo círculo criado.
+                     */
+                    desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
+                    desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
+                    /**
+                     * Desenha a perpendicular da segunda reta criada.
+                     */
+                    desenhaPerpendicular(canvas, listCirc.get(1), listCirc.get(2), paintLine);
+                    break;
+                case 5 :
+                    /**
+                     * Desenha retas saindo do círculo 3 (quarto) em direção ao novo círculo criado.
+                     */
+                    desenhaLinha(canvas, listCirc.get(3).getX(), listCirc.get(3).getY(), listCirc.get(4).getX(), listCirc.get(4).getY(), paintLine);
+                    /**
+                     * Desenha a perpendicular dos 4º e 5º pontos criados, que formam a última reta.
+                     * O ponto de referência é o 4º, por isso ele está como primeiro.
+                     */
+                    desenhaPerpendicular(canvas, listCirc.get(4), listCirc.get(3), paintLine);
+                    break;
+            }
             num++;
         }
         /**
@@ -212,7 +224,6 @@ public class TelaView extends View {
      * Método desenhaCirculo() cria circulo nas definições do paint
      * com x e y definidos pelo evento de touch.
      */
-
     public void desenhaCirculo(Canvas canvas, Circulo circulo, Paint paintCirc){
         /**
          * Raio recebe 2,5% da tela. Ocupando 5% da mesma.
@@ -228,17 +239,31 @@ public class TelaView extends View {
 
     public void desenhaLinha(Canvas canvas, float xStart, float yStart, float xStop, float yStop, Paint paintLine){
         paintLine.setStrokeWidth(3);
+        paintLine.setColor(Color.RED);
         canvas.drawLine(xStart, yStart, xStop, yStop, paintLine);
     }
 
+    /**
+     * Retorna o coeficiente angular, dado por:
+     *    m = (y² - y¹)/ (x² - x¹)
+     * Logo após retorna o negativo do recíproco do coeficiente.
+     *    -1/(m)
+     */
     public float getCoeficienteAngular(Circulo ponto1, Circulo ponto2){
-        // Equação reduzida da reta: y = mx + b;
-        // Coeficiente angular: (y² - y¹)/ (x² - x¹)
         float coeficiente = ((ponto2.getY() - ponto1.getY()) / (ponto2.getX() - ponto1.getX()));
         // negativo do recíproco
         return (-1/(coeficiente));
     }
 
+    /**
+     * Retorna o coeficiente linear, dado por:
+     *    b = y - mx
+     *
+     * Escolhendo apenas um dos pontos da reta para
+     * representar o x e o y, no caso, sempre será
+     * o segundo ponto dado.
+     *
+     */
     public float getCoeficienteLinear(Circulo ponto1, Circulo ponto2){
         // Retorna o coeficiente angular
         float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
@@ -247,29 +272,37 @@ public class TelaView extends View {
         return (ponto2.getY() - (coeficienteAngular * ponto2.getX()));
     }
 
+    /**
+     * Calcula com base na equação reduzida da reta,
+     *     (y = mx + b)
+     * o valor de Y (perpendicular) dado um X qualquer.
+     * No caso, o X é o valor X do ponto + afastamento.
+     */
     public float getYPerpendicular(Circulo ponto1, Circulo ponto2, float afastamento){
         // Retorna o coeficiente linear
         float coeficienteLinear = getCoeficienteLinear(ponto1, ponto2);
         // Retorna o coeficiente angular
         float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
         // Equação reduzida da reta y = mx + b
-        return ((coeficienteAngular * ponto2.getX() + afastamento) + coeficienteLinear);
+        return ((coeficienteAngular * (ponto2.getX() + afastamento)) + coeficienteLinear);
     }
 
     public void desenhaPerpendicular(Canvas canvas, Circulo ponto1, Circulo ponto2, Paint paintLine){
-        paintLine.setStrokeWidth(3);
-
-        float yPerpendicular = getYPerpendicular(ponto1, ponto2, 50);
-
-        float yPerpendicular2 = getYPerpendicular(ponto1, ponto2, -50);
-
-        /* Desenha uma reta saindo do segundo ponto até o
-           próximo ponto dependendo do X;
+        /**
+         * Retorna o valor de Y da perpendicular dado um determinado valor de X,
+         * no caso, o valor de x é relativo ao x do ponto + um afastamento padrão.
+         */
+        float yPerpendicular1 = getYPerpendicular(ponto1, ponto2, - AFASTAMENTO);
+        float yPerpendicular2 = getYPerpendicular(ponto1, ponto2, AFASTAMENTO);
+        /**
+         * Desenha a reta perpendicular com os valores obtidos no cálculo.
+         * Perpendicular 1 refere-se ao afastamento negativo, enquanto que
+         * Perpendicular 2 ao afastamento positivo.
         */
-        canvas.drawLine(ponto2.getX(), ponto2.getY(), ponto2.getX() + 50, yPerpendicular, paintLine);
-
-        canvas.drawLine(ponto2.getX(), ponto2.getY(), ponto2.getX() - 50, yPerpendicular2, paintLine);
-//        canvas.drawLine(ponto2.getX(), ponto2.getY(), -ponto2.getX(), yPerpendicular, paintLine);
+        // linhas brancas
+        paintLine.setColor(Color.WHITE);
+        paintLine.setStrokeWidth(5);
+        canvas.drawLine(ponto2.getX() - AFASTAMENTO, yPerpendicular1, ponto2.getX() + AFASTAMENTO, yPerpendicular2, paintLine);
     }
 
     /**
