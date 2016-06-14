@@ -10,7 +10,11 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.NumberPicker;
 import android.widget.Switch;
+
+import com.vi.swipenumberpicker.OnValueChangeListener;
+import com.vi.swipenumberpicker.SwipeNumberPicker;
 
 import br.projeto.democanvasandroid.R;
 
@@ -22,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Intent intent;
     private String imagem64;
+
+    private SwipeNumberPicker valorMili;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        valorMili = (SwipeNumberPicker) findViewById(R.id.valorMili);
+
+        valorMili.setOnValueChangeListener(new OnValueChangeListener() {
+            @Override
+            public boolean onValueChange(SwipeNumberPicker view, int oldValue, int newValue) {
+                boolean isValueOk = (newValue & 1) == 0;
+                if (isValueOk) {
+                    System.out.println("Valor em mm " + newValue);
+                }
+                return isValueOk;
+            }
+        });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
 
     }
 

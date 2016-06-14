@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5">
+        android:layout_weight="4">
 
         <Switch
             android:id="@+id/btZoom"
@@ -22,31 +22,59 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <br.projeto.democanvasandroid.controller.TelaView
-            android:id="@+id/telaView"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:img_drawable="@drawable/rayx"/>
+            android:layout_weight="1">
 
-    </LinearLayout>
+            <br.projeto.democanvasandroid.controller.TelaView
+                android:id="@+id/telaView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:img_drawable="@drawable/rayx"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4">
+
+            <com.vi.swipenumberpicker.SwipeNumberPicker
+                android:id="@+id/valorMili"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                app:snp_numberColor="@android:color/white"
+                app:snp_arrowColor="@android:color/white"
+                app:snp_backgroundColor="@color/colorPrimaryDark"
+                app:snp_max="20"
+                app:snp_min="0"
+                app:snp_value="10"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5">
+        android:layout_weight="4">
 
-        <Button
-            android:id="@+id/btSalva"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Save" />
+            <Button
+                android:id="@+id/btSalva"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Save" />
     </LinearLayout>
 
 </LinearLayout>
