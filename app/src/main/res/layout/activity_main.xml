@@ -8,6 +8,7 @@
     tools:context=".controller.MainActivity">
 
     <LinearLayout
+        android:id="@+id/layoutBarra"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -47,24 +48,23 @@
             android:layout_height="match_parent"
             android:layout_weight="4">
 
-            <com.vi.swipenumberpicker.SwipeNumberPicker
+            <com.shawnlin.numberpicker.NumberPicker
                 android:id="@+id/valorMili"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                app:snp_numberColor="@android:color/white"
-                app:snp_arrowColor="@android:color/white"
-                app:snp_backgroundColor="@color/colorPrimaryDark"
-                app:snp_max="20"
-                app:snp_min="0"
-                app:snp_value="10"/>
+                android:visibility="gone"
+                app:np_dividerColor="#0f0"
+                app:np_max="30"
+                app:np_min="0"
+                app:np_textColor="#0f0"/>
 
         </LinearLayout>
 
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/layoutBtSalva"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

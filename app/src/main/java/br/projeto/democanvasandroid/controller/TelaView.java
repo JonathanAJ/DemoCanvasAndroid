@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.model.Circulo;
+import br.projeto.democanvasandroid.model.Reta;
 
 public class TelaView extends View {
     /**
@@ -39,6 +40,8 @@ public class TelaView extends View {
     private Circulo circulo;
     private ArrayList<Circulo> listCirc;
     private Iterator<Circulo> circIt;
+    private ArrayList<Reta> listReta;
+    private Iterator<Reta> retaIt;
     private Drawable img;
 
     /**
@@ -47,6 +50,8 @@ public class TelaView extends View {
     private float inicioY = 0;
     private float scrollY = 0;
     private float anteriorScrollY = 0;
+    private float inicioYReta;
+    private float finalYReta;
 
     /**
      * getters e setters
@@ -81,6 +86,16 @@ public class TelaView extends View {
 
     public void setImg(Drawable img) {
         this.img = img;
+    }
+
+    public int getSizeListCirc(){
+        return listCirc.size();
+    }
+
+    public void setListRetaY(int y) {
+        Reta reta = listReta.get(0);
+        reta.setyInicio(inicioYReta + y);
+        reta.setyFinal(finalYReta + y);
     }
 
     /**
@@ -133,6 +148,7 @@ public class TelaView extends View {
         circulo.setY(0);
 
         listCirc = new ArrayList<Circulo>();
+        listReta = new ArrayList<Reta>();
     }
 
     /**
@@ -191,9 +207,13 @@ public class TelaView extends View {
                     desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     /**
-                     * Desenha a perpendicular da segunda reta criada.
+                     * Salva a reta perpendicular da segunda reta criada 1 à 2.
                      */
-                    desenhaPerpendicular(canvas, listCirc.get(1), listCirc.get(2), paintLine);
+                    salvaPerpendicular(canvas, listCirc.get(1), listCirc.get(2));
+                    /**
+                     * Desenha a reta perpendicular salva primeiro
+                     */
+                    desenhaPerpendicular(canvas, listReta.get(0), paintLine);
                     break;
                 case 5 :
                     /**
@@ -204,7 +224,7 @@ public class TelaView extends View {
                      * Desenha a perpendicular dos 4º e 5º pontos criados, que formam a última reta.
                      * O ponto de referência é o 4º, por isso ele está como primeiro.
                      */
-                    desenhaPerpendicular(canvas, listCirc.get(4), listCirc.get(3), paintLine);
+                    salvaPerpendicular(canvas, listCirc.get(4), listCirc.get(3));
                     break;
             }
             num++;
@@ -273,6 +293,21 @@ public class TelaView extends View {
 
     /**
      * Calcula com base na equação reduzida da reta,
+     *     (x = (y - b)/m)
+     * o valor de X (perpendicular) dado um Y qualquer.
+     * No caso, o Y é o valor Y do ponto + afastamento.
+     */
+    public float getXPerpendicular(Circulo ponto1, Circulo ponto2, float afastamento){
+        // Retorna o coeficiente linear
+        float coeficienteLinear = getCoeficienteLinear(ponto1, ponto2);
+        // Retorna o coeficiente angular
+        float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
+        // Equação reduzida da reta x = (y - b)/m
+        return ((ponto2.getY() + afastamento) - coeficienteLinear)/coeficienteAngular;
+    }
+
+    /**
+     * Calcula com base na equação reduzida da reta,
      *     (y = mx + b)
      * o valor de Y (perpendicular) dado um X qualquer.
      * No caso, o X é o valor X do ponto + afastamento.
@@ -286,22 +321,30 @@ public class TelaView extends View {
         return ((coeficienteAngular * (ponto2.getX() + afastamento)) + coeficienteLinear);
     }
 
-    public void desenhaPerpendicular(Canvas canvas, Circulo ponto1, Circulo ponto2, Paint paintLine){
+    public void salvaPerpendicular(Canvas canvas, Circulo ponto1, Circulo ponto2){
         /**
          * Retorna o valor de Y da perpendicular dado um determinado valor de X,
          * no caso, o valor de x é relativo ao x do ponto + um afastamento padrão.
          */
-        float yPerpendicular1 = getYPerpendicular(ponto1, ponto2, - AFASTAMENTO);
+        float yPerpendicular1 = getYPerpendicular(ponto1, ponto2, -AFASTAMENTO);
         float yPerpendicular2 = getYPerpendicular(ponto1, ponto2, AFASTAMENTO);
         /**
          * Desenha a reta perpendicular com os valores obtidos no cálculo.
          * Perpendicular 1 refere-se ao afastamento negativo, enquanto que
          * Perpendicular 2 ao afastamento positivo.
         */
+        // salva retas brancas
+        Reta reta = new Reta(ponto2.getX() - AFASTAMENTO, yPerpendicular1, ponto2.getX() + AFASTAMENTO, yPerpendicular2);
+        listReta.add(reta);
+        inicioYReta = reta.getyInicio();
+        finalYReta = reta.getyFinal();
+    }
+
+    public void desenhaPerpendicular(Canvas canvas, Reta reta, Paint paintLine){
         // linhas brancas
         paintLine.setColor(Color.WHITE);
         paintLine.setStrokeWidth(5);
-        canvas.drawLine(ponto2.getX() - AFASTAMENTO, yPerpendicular1, ponto2.getX() + AFASTAMENTO, yPerpendicular2, paintLine);
+        canvas.drawLine(reta.getxInicio(), reta.getyInicio(), reta.getxFinal(), reta.getyFinal(), paintLine);
     }
 
     /**

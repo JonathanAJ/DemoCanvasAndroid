@@ -10,48 +10,59 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.NumberPicker;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 
-import com.vi.swipenumberpicker.OnValueChangeListener;
-import com.vi.swipenumberpicker.SwipeNumberPicker;
+import com.shawnlin.numberpicker.NumberPicker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import br.projeto.democanvasandroid.R;
+import br.projeto.democanvasandroid.model.Circulo;
 
 public class MainActivity extends AppCompatActivity {
 
     private TelaView tela;
     private Button btSalva;
     private Switch btZoom;
+    private NumberPicker valorMili;
+    private LinearLayout layoutBtSalva;
+    private LinearLayout layoutBarra;
 
-    private Intent intent;
-    private String imagem64;
-
-    private SwipeNumberPicker valorMili;
+    private int sizeListCirc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        intent = getIntent();
-        imagem64 = intent.getExtras().getString("imagem");
-
-        Bitmap imagem = Base64ParaBitmap(imagem64);
-
         tela = (TelaView) findViewById(R.id.telaView);
-        tela.setImg(new BitmapDrawable(getResources(), imagem));
-
+        tela.setImg(getImagem(getIntent()));
         btSalva = (Button) findViewById(R.id.btSalva);
+        btZoom = (Switch) findViewById(R.id.btZoom);
+        valorMili = (NumberPicker) findViewById(R.id.valorMili);
+        layoutBtSalva = (LinearLayout) findViewById(R.id.layoutBtSalva);
+        layoutBarra = (LinearLayout) findViewById(R.id.layoutBarra);
+
+        iniciaListeners();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
+
+    public void iniciaListeners(){
 
         btSalva.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+                sizeListCirc = tela.getSizeListCirc();
+                verificaTamanhoDaLista(sizeListCirc);
             }
         });
-
-        btZoom = (Switch) findViewById(R.id.btZoom);
 
         btZoom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -64,25 +75,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        valorMili = (SwipeNumberPicker) findViewById(R.id.valorMili);
-
-        valorMili.setOnValueChangeListener(new OnValueChangeListener() {
+        valorMili.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
-            public boolean onValueChange(SwipeNumberPicker view, int oldValue, int newValue) {
-                boolean isValueOk = (newValue & 1) == 0;
-                if (isValueOk) {
-                    System.out.println("Valor em mm " + newValue);
-                }
-                return isValueOk;
+            public void onValueChange(android.widget.NumberPicker picker, int oldVal, int newVal) {
+                System.out.println("Valor em mm " + newVal);
+                tela.setListRetaY(newVal);
+                tela.invalidate();
             }
         });
+
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
+    public void verificaTamanhoDaLista(int size){
+        switch(size){
+            /**
+             * Caso chegue no 3º círculo criado, set para visível
+             * o input e mude o salvamento do botão para salvá-lo.
+             */
+            case 3 : {
+                valorMili.setVisibility(View.VISIBLE);
+                layoutBtSalva.setVisibility(View.GONE);
+                layoutBarra.setWeightSum(2);
+                break;
+            }
+            case 5 : {
+                System.out.println("chegou no 5º");
+                break;
+            }
+        }
+    }
 
-
+    public BitmapDrawable getImagem(Intent intent){
+        String imagem64 = intent.getExtras().getString("imagem");
+        Bitmap imgBitmap = Base64ParaBitmap(imagem64);
+        // transforma o Bitmap em BitmapDrawable
+        return new BitmapDrawable(getResources(), imgBitmap);
     }
 
 
