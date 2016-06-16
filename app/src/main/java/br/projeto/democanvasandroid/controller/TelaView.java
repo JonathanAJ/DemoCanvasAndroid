@@ -92,6 +92,10 @@ public class TelaView extends View {
         return listCirc.size();
     }
 
+    public ArrayList<Circulo> getListCirc() {
+        return listCirc;
+    }
+
     public void setListRetaY(int y) {
         Reta reta = listReta.get(0);
         reta.setyInicio(inicioYReta + y);
@@ -207,10 +211,6 @@ public class TelaView extends View {
                     desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     /**
-                     * Salva a reta perpendicular da segunda reta criada 1 à 2.
-                     */
-                    salvaPerpendicular(canvas, listCirc.get(1), listCirc.get(2));
-                    /**
                      * Desenha a reta perpendicular salva primeiro
                      */
                     desenhaPerpendicular(canvas, listReta.get(0), paintLine);
@@ -221,10 +221,9 @@ public class TelaView extends View {
                      */
                     desenhaLinha(canvas, listCirc.get(3).getX(), listCirc.get(3).getY(), listCirc.get(4).getX(), listCirc.get(4).getY(), paintLine);
                     /**
-                     * Desenha a perpendicular dos 4º e 5º pontos criados, que formam a última reta.
-                     * O ponto de referência é o 4º, por isso ele está como primeiro.
+                     * Desenha a reta perpendicular salva por segundo
                      */
-                    salvaPerpendicular(canvas, listCirc.get(4), listCirc.get(3));
+                    desenhaPerpendicular(canvas, listReta.get(1), paintLine);
                     break;
             }
             num++;
@@ -321,7 +320,7 @@ public class TelaView extends View {
         return ((coeficienteAngular * (ponto2.getX() + afastamento)) + coeficienteLinear);
     }
 
-    public void salvaPerpendicular(Canvas canvas, Circulo ponto1, Circulo ponto2){
+    public void salvaPerpendicular(Circulo ponto1, Circulo ponto2){
         /**
          * Retorna o valor de Y da perpendicular dado um determinado valor de X,
          * no caso, o valor de x é relativo ao x do ponto + um afastamento padrão.

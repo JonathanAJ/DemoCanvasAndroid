@@ -10,16 +10,12 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.shawnlin.numberpicker.NumberPicker;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.projeto.democanvasandroid.R;
-import br.projeto.democanvasandroid.model.Circulo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,10 +23,13 @@ public class MainActivity extends AppCompatActivity {
     private Button btSalva;
     private Switch btZoom;
     private NumberPicker valorMili;
-    private LinearLayout layoutBtSalva;
-    private LinearLayout layoutBarra;
 
-    private int sizeListCirc;
+    private int numProcesso = 1;
+    private boolean insereCirculo = true;
+
+    private final int minValorMm = -30;
+    private final int maxValorMm = 30;
+    private int atualValorMm = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
         btSalva = (Button) findViewById(R.id.btSalva);
         btZoom = (Switch) findViewById(R.id.btZoom);
         valorMili = (NumberPicker) findViewById(R.id.valorMili);
-        layoutBtSalva = (LinearLayout) findViewById(R.id.layoutBtSalva);
-        layoutBarra = (LinearLayout) findViewById(R.id.layoutBarra);
+        formataPicker();
 
         iniciaListeners();
     }
@@ -58,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
         btSalva.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
-                sizeListCirc = tela.getSizeListCirc();
-                verificaTamanhoDaLista(sizeListCirc);
+                numProcesso = proximoNumeroProcesso(numProcesso);
             }
         });
 
@@ -78,31 +74,66 @@ public class MainActivity extends AppCompatActivity {
         valorMili.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(android.widget.NumberPicker picker, int oldVal, int newVal) {
-                System.out.println("Valor em mm " + newVal);
-                tela.setListRetaY(newVal);
+                atualValorMm = newVal + minValorMm;
+                tela.setListRetaY(atualValorMm);
+                System.out.println("Valor em mm " + atualValorMm);
                 tela.invalidate();
             }
         });
 
     }
 
-    public void verificaTamanhoDaLista(int size){
-        switch(size){
-            /**
-             * Caso chegue no 3º círculo criado, set para visível
-             * o input e mude o salvamento do botão para salvá-lo.
-             */
-            case 3 : {
-                valorMili.setVisibility(View.VISIBLE);
-                layoutBtSalva.setVisibility(View.GONE);
-                layoutBarra.setWeightSum(2);
-                break;
+    /**
+     *
+     * Método que gerencia em qual estado o processo todo se encontra.
+     * Ele é definido a cada click do botão salvar.
+     */
+    public int proximoNumeroProcesso(int numProcesso){
+
+        if(insereCirculo){
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+            if (numProcesso == 3){
+                tela.salvaPerpendicular(tela.getListCirc().get(1), tela.getListCirc().get(2));
             }
-            case 5 : {
-                System.out.println("chegou no 5º");
-                break;
+            else if (numProcesso == 6){
+                tela.salvaPerpendicular(tela.getListCirc().get(4), tela.getListCirc().get(3));
             }
         }
+
+        if (numProcesso == 3){
+            insereCirculo = false;
+            valorMili.setVisibility(View.VISIBLE);
+        }
+        else if (numProcesso == 4){
+            insereCirculo = true;
+            valorMili.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Tamanho salvo com sucesso!", Toast.LENGTH_SHORT).show();
+        }
+        else if (numProcesso == 5){
+            System.out.println("chegou no 5º");
+        }
+
+        return numProcesso + 1;
+    }
+
+    public void formataPicker(){
+        /**
+         * Método encontrado para formatar o picker e adicionar
+         * valores negativos ao mesmo.
+         */
+        valorMili.setMinValue(0);
+        valorMili.setMaxValue(maxValorMm - minValorMm);
+        valorMili.setValue(atualValorMm - minValorMm);
+        valorMili.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int index) {
+                if(index == maxValorMm){
+                    return "0";
+                }else {
+                    return index + minValorMm + "mm";
+                }
+            }
+        });
     }
 
     public BitmapDrawable getImagem(Intent intent){
@@ -111,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
         // transforma o Bitmap em BitmapDrawable
         return new BitmapDrawable(getResources(), imgBitmap);
     }
-
 
     public static Bitmap Base64ParaBitmap(String imagemB64){
         //decodifica base64 para byte

@@ -50,13 +50,11 @@
 
             <com.shawnlin.numberpicker.NumberPicker
                 android:id="@+id/valorMili"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:visibility="gone"
                 app:np_dividerColor="#0f0"
-                app:np_max="30"
-                app:np_min="0"
                 app:np_textColor="#0f0"/>
 
         </LinearLayout>
