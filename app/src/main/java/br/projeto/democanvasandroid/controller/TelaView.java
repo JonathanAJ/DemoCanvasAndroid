@@ -97,9 +97,16 @@ public class TelaView extends View {
     }
 
     public void setListRetaY(int y) {
-        Reta reta = listReta.get(0);
+        /**
+         * Sempre manipula a última reta criada
+         */
+        Reta reta = listReta.get(listReta.size() - 1);
         reta.setyInicio(inicioYReta + y);
         reta.setyFinal(finalYReta + y);
+    }
+
+    public ArrayList<Reta> getListReta() {
+        return listReta;
     }
 
     /**
@@ -214,6 +221,12 @@ public class TelaView extends View {
                      * Desenha a reta perpendicular salva primeiro
                      */
                     desenhaPerpendicular(canvas, listReta.get(0), paintLine);
+                    /**
+                     * Desenha a reta paralela a perpendicular, se existir.
+                     */
+                    if(listReta.size() == 2){
+                        desenhaPerpendicular(canvas, listReta.get(1), paintLine);
+                    }
                     break;
                 case 5 :
                     /**
@@ -223,7 +236,13 @@ public class TelaView extends View {
                     /**
                      * Desenha a reta perpendicular salva por segundo
                      */
-                    desenhaPerpendicular(canvas, listReta.get(1), paintLine);
+                    desenhaPerpendicular(canvas, listReta.get(2), paintLine);
+                    /**
+                     * Desenha a reta paralela a perpendicular, se existir.
+                     */
+                    if(listReta.size() == 4){
+                        desenhaPerpendicular(canvas, listReta.get(3), paintLine);
+                    }
                     break;
             }
             num++;
@@ -339,10 +358,20 @@ public class TelaView extends View {
         finalYReta = reta.getyFinal();
     }
 
+    public void salvaReta(Reta reta, float yAfastamento){
+        Reta retaNova = new Reta(reta.getxInicio(),reta.getyInicio() + yAfastamento,
+                reta.getxFinal(), reta.getyFinal() + yAfastamento);
+//        retaNova.setyInicio(reta.getyInicio() + yAfastamento);
+//        retaNova.setyFinal(reta.getyFinal() + yAfastamento);
+        listReta.add(retaNova);
+        inicioYReta = retaNova.getyInicio();
+        finalYReta = retaNova.getyFinal();
+    }
+
     public void desenhaPerpendicular(Canvas canvas, Reta reta, Paint paintLine){
         // linhas brancas
         paintLine.setColor(Color.WHITE);
-        paintLine.setStrokeWidth(5);
+        paintLine.setStrokeWidth(3);
         canvas.drawLine(reta.getxInicio(), reta.getyInicio(), reta.getxFinal(), reta.getyFinal(), paintLine);
     }
 

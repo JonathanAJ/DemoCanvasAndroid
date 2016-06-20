@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import br.projeto.democanvasandroid.R;
+import br.projeto.democanvasandroid.model.Reta;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private NumberPicker valorMili;
 
     private int numProcesso = 1;
-    private boolean insereCirculo = true;
 
+    private boolean pickerNegative = true;
     private final int minValorMm = -30;
     private final int maxValorMm = 30;
     private int atualValorMm = 0;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         btSalva = (Button) findViewById(R.id.btSalva);
         btZoom = (Switch) findViewById(R.id.btZoom);
         valorMili = (NumberPicker) findViewById(R.id.valorMili);
-        formataPicker();
+        formatPickerNegative();
 
         iniciaListeners();
     }
@@ -74,10 +75,23 @@ public class MainActivity extends AppCompatActivity {
         valorMili.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(android.widget.NumberPicker picker, int oldVal, int newVal) {
-                atualValorMm = newVal + minValorMm;
-                tela.setListRetaY(atualValorMm);
-                System.out.println("Valor em mm " + atualValorMm);
-                tela.invalidate();
+                if (pickerNegative) {
+                    atualValorMm = newVal + minValorMm;
+                    tela.setListRetaY(atualValorMm);
+                    System.out.println("Valor em mm " + atualValorMm);
+                    tela.invalidate();
+                }
+                else {
+                    if (numProcesso < 6){
+                        tela.setListRetaY(-newVal);
+                        System.out.println("Valor em mm " + (-newVal));
+                    }
+                    else {
+                        tela.setListRetaY(newVal);
+                        System.out.println("Valor em mm " + newVal);
+                    }
+                    tela.invalidate();
+                }
             }
         });
 
@@ -89,34 +103,55 @@ public class MainActivity extends AppCompatActivity {
      * Ele é definido a cada click do botão salvar.
      */
     public int proximoNumeroProcesso(int numProcesso){
-
-        if(insereCirculo){
+        /**
+         * Gera os primeiros 2 pontos
+         */
+        if (numProcesso < 3) {
             tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
-            if (numProcesso == 3){
-                tela.salvaPerpendicular(tela.getListCirc().get(1), tela.getListCirc().get(2));
-            }
-            else if (numProcesso == 6){
-                tela.salvaPerpendicular(tela.getListCirc().get(4), tela.getListCirc().get(3));
-            }
         }
-
-        if (numProcesso == 3){
-            insereCirculo = false;
+        /**
+         * Gera o 3º, a perpendicular e a visibilidade do Picker
+         */
+        else if (numProcesso == 3) {
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+            tela.salvaPerpendicular(tela.getListCirc().get(1), tela.getListCirc().get(2));
             valorMili.setVisibility(View.VISIBLE);
         }
-        else if (numProcesso == 4){
-            insereCirculo = true;
-            valorMili.setVisibility(View.GONE);
+        /**
+         * Informa que o número do Picker foi salvo.
+         */
+        else if (numProcesso == 4) {
             Toast.makeText(getApplicationContext(), "Tamanho salvo com sucesso!", Toast.LENGTH_SHORT).show();
+            tela.salvaReta(tela.getListReta().get(0), 0);
+            formatPickerNoNegative();
+            pickerNegative = false;
+            tela.invalidate();
         }
-        else if (numProcesso == 5){
-            System.out.println("chegou no 5º");
+        else if (numProcesso == 5) {
+            valorMili.setVisibility(View.GONE);
+            formatPickerNegative();
+            pickerNegative = true;
+        }
+        else if (numProcesso == 6) {
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+        }
+        else if (numProcesso == 7) {
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+            tela.salvaPerpendicular(tela.getListCirc().get(4), tela.getListCirc().get(3));
+            valorMili.setVisibility(View.VISIBLE);
+        }
+        else if (numProcesso == 8) {
+            Toast.makeText(getApplicationContext(), "Tamanho salvo com sucesso!", Toast.LENGTH_SHORT).show();
+            tela.salvaReta(tela.getListReta().get(2), 0);
+            formatPickerNoNegative();
+            pickerNegative = false;
+            tela.invalidate();
         }
 
         return numProcesso + 1;
     }
 
-    public void formataPicker(){
+    public void formatPickerNegative(){
         /**
          * Método encontrado para formatar o picker e adicionar
          * valores negativos ao mesmo.
@@ -132,6 +167,21 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     return index + minValorMm + "mm";
                 }
+            }
+        });
+    }
+
+    public void formatPickerNoNegative(){
+        /**
+         * Método encontrado para formatar o picker.
+         */
+        valorMili.setMinValue(0);
+        valorMili.setMaxValue(30);
+        valorMili.setValue(0);
+        valorMili.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int index) {
+                return index + "mm";
             }
         });
     }
