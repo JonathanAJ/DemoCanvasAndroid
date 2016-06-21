@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      *
-     * Método que gerencia em qual estado o processo todo se encontra.
+     * Método que gerencia em qual estado o processo se encontra.
      * Ele é definido a cada click do botão salvar.
      */
     public int proximoNumeroProcesso(int numProcesso){

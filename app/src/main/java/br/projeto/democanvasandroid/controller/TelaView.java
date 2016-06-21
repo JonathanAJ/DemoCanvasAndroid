@@ -33,6 +33,7 @@ public class TelaView extends View {
      */
     private Paint paintCirc;
     private Paint paintLine;
+    private Paint paintTxt;
 
     /**
      * Variáveis de componentes
@@ -154,6 +155,10 @@ public class TelaView extends View {
         paintLine.setColor(Color.RED);
         paintLine.setStrokeWidth(3);
 
+        paintTxt = new Paint();
+        paintTxt.setColor(Color.WHITE);
+        paintTxt.setTextSize(18);
+
         circulo = new Circulo();
         circulo.setX(0);
         circulo.setY(0);
@@ -218,6 +223,13 @@ public class TelaView extends View {
                     desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     /**
+                     * Calcula o ângulo entre as retas geradas
+                     */
+                    canvas.drawText("Ângulo : "  + (int)
+                            getAnguloEntreRetas(listCirc.get(0), listCirc.get(2),
+                                                listCirc.get(1), listCirc.get(2)) + "º",
+                                                10, 15, paintTxt) ;
+                    /**
                      * Desenha a reta perpendicular salva primeiro
                      */
                     desenhaPerpendicular(canvas, listReta.get(0), paintLine);
@@ -281,14 +293,32 @@ public class TelaView extends View {
     }
 
     /**
+     *
+     * Equação do ângulo entre duas retas:
+     *    tg a = (m¹ - m²)/(1 + (m¹*m²))
+     *    onde m é o coeficiente angular
+     */
+    public double getAnguloEntreRetas(Circulo retaUmPonto1, Circulo retaUmPonto2, Circulo retaDoisPonto1, Circulo retaDoisPonto2){
+        float coeficienteM1 = getCoeficienteAngular(retaUmPonto1, retaUmPonto2);
+        float coeficienteM2 = getCoeficienteAngular(retaDoisPonto1, retaDoisPonto2);
+        // equação do ângulo
+        float tangente = (coeficienteM2 - coeficienteM1)/(1 + (coeficienteM2 * coeficienteM1));
+        return Math.toDegrees(Math.tan(tangente));
+    }
+
+    /**
      * Retorna o coeficiente angular, dado por:
      *    m = (y² - y¹)/ (x² - x¹)
-     * Logo após retorna o negativo do recíproco do coeficiente.
-     *    -1/(m)
      */
     public float getCoeficienteAngular(Circulo ponto1, Circulo ponto2){
-        float coeficiente = ((ponto2.getY() - ponto1.getY()) / (ponto2.getX() - ponto1.getX()));
-        // negativo do recíproco
+        return ((ponto2.getY() - ponto1.getY()) / (ponto2.getX() - ponto1.getX()));
+    }
+
+    /**
+    * Logo após retorna o negativo do recíproco do coeficiente.
+    *    -1/(m)
+    */
+    public float negativoReciproco(Float coeficiente){
         return (-1/(coeficiente));
     }
 
@@ -302,8 +332,8 @@ public class TelaView extends View {
      *
      */
     public float getCoeficienteLinear(Circulo ponto1, Circulo ponto2){
-        // Retorna o coeficiente angular
-        float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
+        // Retorna o coeficiente angular com o negativo do reciproco para perpendicular
+        float coeficienteAngular = negativoReciproco(getCoeficienteAngular(ponto1, ponto2));
         // Coeficiente linear: b = y - mx;
         // Escolhe um dos pontos, no caso, o segundo;
         return (ponto2.getY() - (coeficienteAngular * ponto2.getX()));
@@ -319,7 +349,7 @@ public class TelaView extends View {
         // Retorna o coeficiente linear
         float coeficienteLinear = getCoeficienteLinear(ponto1, ponto2);
         // Retorna o coeficiente angular
-        float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
+        float coeficienteAngular = negativoReciproco(getCoeficienteAngular(ponto1, ponto2));
         // Equação reduzida da reta x = (y - b)/m
         return ((ponto2.getY() + afastamento) - coeficienteLinear)/coeficienteAngular;
     }
@@ -334,7 +364,7 @@ public class TelaView extends View {
         // Retorna o coeficiente linear
         float coeficienteLinear = getCoeficienteLinear(ponto1, ponto2);
         // Retorna o coeficiente angular
-        float coeficienteAngular = getCoeficienteAngular(ponto1, ponto2);
+        float coeficienteAngular = negativoReciproco(getCoeficienteAngular(ponto1, ponto2));
         // Equação reduzida da reta y = mx + b
         return ((coeficienteAngular * (ponto2.getX() + afastamento)) + coeficienteLinear);
     }
@@ -361,8 +391,6 @@ public class TelaView extends View {
     public void salvaReta(Reta reta, float yAfastamento){
         Reta retaNova = new Reta(reta.getxInicio(),reta.getyInicio() + yAfastamento,
                 reta.getxFinal(), reta.getyFinal() + yAfastamento);
-//        retaNova.setyInicio(reta.getyInicio() + yAfastamento);
-//        retaNova.setyFinal(reta.getyFinal() + yAfastamento);
         listReta.add(retaNova);
         inicioYReta = retaNova.getyInicio();
         finalYReta = retaNova.getyFinal();
