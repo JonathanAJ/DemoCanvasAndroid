@@ -9,8 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import java.util.List;
 
-import br.projeto.democanvasandroid.R;
-
 public class GaleriaAdapter extends PagerAdapter{
 
     private Context context;

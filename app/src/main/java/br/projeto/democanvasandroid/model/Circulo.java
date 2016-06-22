@@ -5,6 +5,14 @@ public class Circulo {
     private float x;
     private float y;
 
+    public Circulo() {
+    }
+
+    public Circulo(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public float getX() {
         return x;
     }

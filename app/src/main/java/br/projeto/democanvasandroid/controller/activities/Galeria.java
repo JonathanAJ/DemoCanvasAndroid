@@ -1,4 +1,4 @@
-package br.projeto.democanvasandroid.controller;
+package br.projeto.democanvasandroid.controller.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +11,6 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.projeto.democanvasandroid.R;
+import br.projeto.democanvasandroid.controller.GaleriaAdapter;
+import br.projeto.democanvasandroid.controller.activities.MainActivity;
 import br.projeto.democanvasandroid.model.Imagem;
 
 public class Galeria extends AppCompatActivity {

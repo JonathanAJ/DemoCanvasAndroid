@@ -223,20 +223,16 @@ public class TelaView extends View {
                     desenhaLinha(canvas, listCirc.get(0).getX(), listCirc.get(0).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     desenhaLinha(canvas, listCirc.get(1).getX(), listCirc.get(1).getY(), listCirc.get(2).getX(), listCirc.get(2).getY(), paintLine);
                     /**
-                     * Calcula o ângulo entre as retas geradas
+                     * Desenha a reta perpendicular salva primeiro,
+                     * somente até o o 3º ponto
                      */
-                    canvas.drawText("Ângulo : "  + (int)
-                            getAnguloEntreRetas(listCirc.get(0), listCirc.get(2),
-                                                listCirc.get(1), listCirc.get(2)) + "º",
-                                                10, 15, paintTxt) ;
-                    /**
-                     * Desenha a reta perpendicular salva primeiro
+                    if(listCirc.size() == 3){
+                        desenhaPerpendicular(canvas, listReta.get(0), paintLine);
+                    }/**
+                     * Desenha a reta paralela a perpendicular,
+                     * somente se ela existir..
                      */
-                    desenhaPerpendicular(canvas, listReta.get(0), paintLine);
-                    /**
-                     * Desenha a reta paralela a perpendicular, se existir.
-                     */
-                    if(listReta.size() == 2){
+                    if(listReta.size() >= 2){
                         desenhaPerpendicular(canvas, listReta.get(1), paintLine);
                     }
                     break;
@@ -246,13 +242,16 @@ public class TelaView extends View {
                      */
                     desenhaLinha(canvas, listCirc.get(3).getX(), listCirc.get(3).getY(), listCirc.get(4).getX(), listCirc.get(4).getY(), paintLine);
                     /**
-                     * Desenha a reta perpendicular salva por segundo
+                     * Desenha a reta perpendicular salva por segundo,
+                     * somente até a 4ª reta
                      */
-                    desenhaPerpendicular(canvas, listReta.get(2), paintLine);
+                    if(listReta.size() <= 4){
+                        desenhaPerpendicular(canvas, listReta.get(2), paintLine);
+                    }
                     /**
                      * Desenha a reta paralela a perpendicular, se existir.
                      */
-                    if(listReta.size() == 4){
+                    if(listReta.size() >= 4){
                         desenhaPerpendicular(canvas, listReta.get(3), paintLine);
                     }
                     break;

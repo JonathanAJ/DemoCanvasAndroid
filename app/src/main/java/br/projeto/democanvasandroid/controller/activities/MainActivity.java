@@ -1,4 +1,4 @@
-package br.projeto.democanvasandroid.controller;
+package br.projeto.democanvasandroid.controller.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import br.projeto.democanvasandroid.R;
+import br.projeto.democanvasandroid.controller.TelaView;
+import br.projeto.democanvasandroid.model.Circulo;
 import br.projeto.democanvasandroid.model.Reta;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private final int minValorMm = -30;
     private final int maxValorMm = 30;
     private int atualValorMm = 0;
+
+    private int angulo1;
+    private int angulo2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +121,13 @@ public class MainActivity extends AppCompatActivity {
             tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
             tela.salvaPerpendicular(tela.getListCirc().get(1), tela.getListCirc().get(2));
             valorMili.setVisibility(View.VISIBLE);
+            /**
+             * Calcula e retorna o ângulo entre as retas geradas
+             */
+            int angulo = (int) tela.getAnguloEntreRetas(tela.getListCirc().get(0), tela.getListCirc().get(2),
+                    tela.getListCirc().get(1), tela.getListCirc().get(2));
+            System.out.println("Ângulo entre alinhamento mecânico e anatômico: " + angulo);
+            angulo1 = angulo;
         }
         /**
          * Informa que o número do Picker foi salvo.
@@ -146,6 +158,33 @@ public class MainActivity extends AppCompatActivity {
             formatPickerNoNegative();
             pickerNegative = false;
             tela.invalidate();
+        }
+        else if (numProcesso == 9) {
+            // última reta criada para fechar lógica de visibilidade
+            tela.salvaReta(new Reta(0,0,0,0), 0);
+            valorMili.setVisibility(View.GONE);
+            tela.invalidate();
+            /**
+             * Calcula e retorna o ângulo entre as 2ª e 4ª retas brancas geradas
+             */
+            Reta reta1 = tela.getListReta().get(1);
+            Reta reta2 = tela.getListReta().get(3);
+
+            Circulo pontoUmReta1 = new Circulo(reta1.getxInicio(), reta1.getyInicio());
+            Circulo pontoDoisReta1 = new Circulo(reta1.getxFinal(), reta1.getyFinal());
+
+            Circulo pontoUmReta2 = new Circulo(reta2.getxInicio(), reta2.getyInicio());
+            Circulo pontoDoisReta2 = new Circulo(reta2.getxFinal(), reta2.getyFinal());
+
+            int angulo = (int) tela.getAnguloEntreRetas(pontoUmReta1, pontoDoisReta1, pontoUmReta2, pontoDoisReta2);
+            System.out.println("Ângulo da deformidade: " + angulo);
+            angulo2 = angulo;
+        }
+        else if (numProcesso >= 10){
+            Intent activity = new Intent(this, FinalActivity.class);
+            activity.putExtra("angulo1", angulo1);
+            activity.putExtra("angulo2", angulo2);
+            startActivity(activity);
         }
 
         return numProcesso + 1;
