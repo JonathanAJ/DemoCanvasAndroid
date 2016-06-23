@@ -21,7 +21,7 @@ public class TelaView extends View {
     /**
      * Constantes
      */
-    final private int AFASTAMENTO = 100;
+    private int AFASTAMENTO = 100;
     /**
      * Flags
      */
@@ -370,6 +370,13 @@ public class TelaView extends View {
 
     public void salvaPerpendicular(Circulo ponto1, Circulo ponto2){
         /**
+         * Gambiarra temporária p/ responsividade
+         */
+        if (getWidth() > 700){
+            AFASTAMENTO = 250;
+        }
+
+        /**
          * Retorna o valor de Y da perpendicular dado um determinado valor de X,
          * no caso, o valor de x é relativo ao x do ponto + um afastamento padrão.
          */
@@ -397,7 +404,7 @@ public class TelaView extends View {
 
     public void desenhaPerpendicular(Canvas canvas, Reta reta, Paint paintLine){
         // linhas brancas
-        paintLine.setColor(Color.WHITE);
+        paintLine.setColor(Color.GREEN);
         paintLine.setStrokeWidth(3);
         canvas.drawLine(reta.getxInicio(), reta.getyInicio(), reta.getxFinal(), reta.getyFinal(), paintLine);
     }

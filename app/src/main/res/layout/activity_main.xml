@@ -63,16 +63,24 @@
 
     <LinearLayout
         android:id="@+id/layoutBtSalva"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4">
 
             <Button
+                android:id="@+id/btRetorna"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Retornar" />
+
+            <Button
                 android:id="@+id/btSalva"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Save" />
+                android:layout_weight="1"
+                android:text="Salvar" />
     </LinearLayout>
 
 </LinearLayout>

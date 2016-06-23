@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TelaView tela;
     private Button btSalva;
+    private Button btRetorna;
     private Switch btZoom;
     private NumberPicker valorMili;
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         tela = (TelaView) findViewById(R.id.telaView);
         tela.setImg(getImagem(getIntent()));
         btSalva = (Button) findViewById(R.id.btSalva);
+        btRetorna = (Button) findViewById(R.id.btRetorna);
         btZoom = (Switch) findViewById(R.id.btZoom);
         valorMili = (NumberPicker) findViewById(R.id.valorMili);
         formatPickerNegative();
@@ -63,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 numProcesso = proximoNumeroProcesso(numProcesso);
+            }
+        });
+
+        btRetorna.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                numProcesso = anteriorNumeroProcesso(numProcesso);
             }
         });
 
@@ -180,14 +189,29 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Ângulo da deformidade: " + angulo);
             angulo2 = angulo;
         }
-        else if (numProcesso >= 10){
+        else if (numProcesso == 10){
             Intent activity = new Intent(this, FinalActivity.class);
             activity.putExtra("angulo1", angulo1);
             activity.putExtra("angulo2", angulo2);
             startActivity(activity);
         }
 
-        return numProcesso + 1;
+        if(numProcesso == 10) {
+            return numProcesso;
+        }
+        else {
+            return numProcesso + 1;
+        }
+    }
+
+
+    public int anteriorNumeroProcesso(int numProcesso){
+        if(numProcesso == 1) {
+            return numProcesso;
+        }
+        else {
+            return numProcesso - 1;
+        }
     }
 
     public void formatPickerNegative(){
