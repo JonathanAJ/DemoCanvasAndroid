@@ -7,26 +7,39 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.controller.TelaView;
 import br.projeto.democanvasandroid.model.Circulo;
+import br.projeto.democanvasandroid.model.Imagem;
 import br.projeto.democanvasandroid.model.Reta;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DatabaseReference url = FirebaseDatabase.getInstance().getReference();
+
+    //Header do base64 > data:image/png;base64,
+    private final int HEADER = 22;
     private TelaView tela;
     private Button btSalva;
     private Button btRetorna;
     private Switch btZoom;
     private NumberPicker valorMili;
+    private String imgBase64;
+    private Bitmap imgBitmap;
 
     private int numProcesso = 1;
 
@@ -44,7 +57,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tela = (TelaView) findViewById(R.id.telaView);
-        tela.setImg(getImagem(getIntent()));
+        String idImg = getIntent().getExtras().getString("idImg");
+
+        tela.setImg(getImagem(idImg));
         btSalva = (Button) findViewById(R.id.btSalva);
         btRetorna = (Button) findViewById(R.id.btRetorna);
         btZoom = (Switch) findViewById(R.id.btZoom);
@@ -57,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        tela.setImg(new BitmapDrawable(getResources(), imgBitmap));
     }
 
     public void iniciaListeners(){
@@ -249,17 +265,39 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public BitmapDrawable getImagem(Intent intent){
-        String imagem64 = intent.getExtras().getString("imagem");
-        Bitmap imgBitmap = Base64ParaBitmap(imagem64);
-        // transforma o Bitmap em BitmapDrawable
-        return new BitmapDrawable(getResources(), imgBitmap);
-    }
-
-    public static Bitmap Base64ParaBitmap(String imagemB64){
+    public Bitmap Base64ParaBitmap(String imagemB64){
         //decodifica base64 para byte
         byte[] imgByte = Base64.decode(imagemB64, Base64.DEFAULT);
         //decodifica byte para Bitmap
         return BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
+    }
+
+    boolean flag = false;
+    public BitmapDrawable getImagem(String id) {
+        System.out.println("ID____"+id);
+        url.child("Imagens").child(id).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // retorna imagemBase64
+                        Imagem img = dataSnapshot.getValue(Imagem.class);
+                        imgBase64 = img.getImagem();
+                        String imagem = img.getImagem().substring(HEADER, imgBase64.length());
+                        imgBitmap = Base64ParaBitmap(imagem);
+
+                        System.out.println("IMG____"+imagem);
+                        flag = true;
+                        System.out.println("FLAG1___"+flag);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("Erro no banco", databaseError.getMessage());
+                    }
+                });
+
+        // transforma o Bitmap em BitmapDrawable
+        System.out.println("FLAG2___"+flag);
+        return new BitmapDrawable(getResources(), imgBitmap);
     }
 }

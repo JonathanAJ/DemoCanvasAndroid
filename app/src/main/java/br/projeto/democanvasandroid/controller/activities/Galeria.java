@@ -32,12 +32,10 @@ public class Galeria extends AppCompatActivity {
 
     private DatabaseReference url = FirebaseDatabase.getInstance().getReference();
 
-    //Header do base64 > data:image/png;base64,
-    private final int HEADER = 22;
     private ViewPager galeria;
     private GaleriaAdapter galeriaAdapter;
     private Button btSelecionaImg;
-    private List<Bitmap> bitmapList = new ArrayList<Bitmap>();
+    private List<Imagem> imgList = new ArrayList<>();
     private LinearLayout layoutLoad;
     private LinearLayout layoutPrincipal;
 
@@ -47,31 +45,13 @@ public class Galeria extends AppCompatActivity {
         setContentView(R.layout.activity_galeria);
 
         galeria = (ViewPager) findViewById(R.id.galeria);
-        galeriaAdapter =  new GaleriaAdapter(this, bitmapList);
+        galeriaAdapter =  new GaleriaAdapter(this, imgList);
         galeria.setAdapter(galeriaAdapter);
-
         layoutLoad = (LinearLayout) findViewById(R.id.layoutLoad);
         layoutPrincipal = (LinearLayout) findViewById(R.id.layoutPrincipal);
-
         btSelecionaImg = (Button) findViewById(R.id.bt_seleciona_img);
-        btSelecionaImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                int posicao = galeria.getCurrentItem();
-
-                System.out.println(" ITEM >>> " + posicao);
-
-                byte[] imgByte = converteBitmapParaByte(bitmapList.get(posicao));
-                String imgBase64 = Base64.encodeToString(imgByte, Base64.NO_WRAP);
-
-                Intent intentMain = new Intent(getApplicationContext(), MainActivity.class);
-                intentMain.putExtra("imagem", imgBase64);
-                startActivity(intentMain);
-
-            }
-        });
-
+        iniciaListeners();
         listaImagens();
     }
 
@@ -79,7 +59,7 @@ public class Galeria extends AppCompatActivity {
         url.child("Imagens").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                bitmapList.clear();
+                imgList.clear();
                 layoutLoad.setVisibility(View.GONE);
                 layoutPrincipal.setVisibility(View.VISIBLE);
 
@@ -87,12 +67,9 @@ public class Galeria extends AppCompatActivity {
                     Imagem img = postSnapshot.getValue(Imagem.class);
                     img.setId(postSnapshot.getKey());
 
-                    String imagem = img.getImagem().substring(HEADER, img.getImagem().length());
-                    Bitmap bitmap = Base64ParaBitmap(imagem);
+                    imgList.add(img);
 
-                    bitmapList.add(bitmap);
-
-                    System.out.println("Imagem - ID: " + img.getId() + " - IMAGE: " + imagem);
+                    System.out.println("Imagem - ID: " + img.getId() + " - IMAGE: " + img.getImagem());
                 }
 
                 galeriaAdapter.notifyDataSetChanged();
@@ -106,16 +83,21 @@ public class Galeria extends AppCompatActivity {
         });
     }
 
-    public static Bitmap Base64ParaBitmap(String imagemB64){
-        //decodifica base64 para byte
-        byte[] imgByte = Base64.decode(imagemB64, Base64.DEFAULT);
-        //decodifica byte para Bitmap
-        return BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
-    }
+    public void iniciaListeners(){
 
-    public byte[] converteBitmapParaByte(Bitmap img){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        img.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        return byteArrayOutputStream.toByteArray();
+        btSelecionaImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int posicao = galeria.getCurrentItem();
+                String idImg = imgList.get(posicao).getId();
+
+                Intent intentMain = new Intent(getApplicationContext(), MainActivity.class);
+                intentMain.putExtra("idImg", idImg);
+                startActivity(intentMain);
+
+            }
+        });
+
     }
 }
