@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         tela = (TelaView) findViewById(R.id.telaView);
         String idImg = getIntent().getExtras().getString("idImg");
 
-        tela.setImg(getImagem(idImg));
         btSalva = (Button) findViewById(R.id.btSalva);
         btRetorna = (Button) findViewById(R.id.btRetorna);
         btZoom = (Switch) findViewById(R.id.btZoom);
@@ -67,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
         formatPickerNegative();
 
         iniciaListeners();
+        getImagem(idImg);
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        tela.setImg(new BitmapDrawable(getResources(), imgBitmap));
     }
 
     public void iniciaListeners(){
@@ -272,32 +271,25 @@ public class MainActivity extends AppCompatActivity {
         return BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
     }
 
-    boolean flag = false;
-    public BitmapDrawable getImagem(String id) {
+    public void getImagem(String id) {
         System.out.println("ID____"+id);
         url.child("Imagens").child(id).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // retorna imagemBase64
-                        Imagem img = dataSnapshot.getValue(Imagem.class);
-                        imgBase64 = img.getImagem();
-                        String imagem = img.getImagem().substring(HEADER, imgBase64.length());
-                        imgBitmap = Base64ParaBitmap(imagem);
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // retorna imagemBase64
+                    Imagem img = dataSnapshot.getValue(Imagem.class);
+                    imgBase64 = img.getImagem();
+                    String imagem = img.getImagem().substring(HEADER, imgBase64.length());
+                    imgBitmap = Base64ParaBitmap(imagem);
+                    System.out.println("IMG____"+imagem);
+                    tela.setImg(new BitmapDrawable(getResources(), imgBitmap));
+                }
 
-                        System.out.println("IMG____"+imagem);
-                        flag = true;
-                        System.out.println("FLAG1___"+flag);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("Erro no banco", databaseError.getMessage());
-                    }
-                });
-
-        // transforma o Bitmap em BitmapDrawable
-        System.out.println("FLAG2___"+flag);
-        return new BitmapDrawable(getResources(), imgBitmap);
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("Erro no banco", databaseError.getMessage());
+                }
+            });
     }
 }
