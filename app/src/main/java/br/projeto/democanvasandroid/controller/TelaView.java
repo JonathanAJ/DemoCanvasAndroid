@@ -53,6 +53,7 @@ public class TelaView extends View {
     private float anteriorScrollY = 0;
     private float inicioYReta;
     private float finalYReta;
+    private float densidade;
 
     /**
      * getters e setters
@@ -145,6 +146,8 @@ public class TelaView extends View {
      */
 
     private void init(Context context) {
+
+        densidade = getResources().getDisplayMetrics().density;
 
         paintCirc = new Paint();
         paintCirc.setAntiAlias(true);
@@ -274,9 +277,9 @@ public class TelaView extends View {
      */
     public void desenhaCirculo(Canvas canvas, Circulo circulo, Paint paintCirc){
         /**
-         * Raio recebe 2,5% da tela. Ocupando 5% da mesma.
+         * Raio de 10 pixels relativo a densidade da tela.
          */
-        float raio = (float) (canvas.getWidth()*0.025);
+        float raio = 10 * densidade;
 
         if(isZoom()) {
             canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);
@@ -286,7 +289,7 @@ public class TelaView extends View {
     }
 
     public void desenhaLinha(Canvas canvas, float xStart, float yStart, float xStop, float yStop, Paint paintLine){
-        paintLine.setStrokeWidth(3);
+        paintLine.setStrokeWidth(3 * densidade);
         paintLine.setColor(Color.RED);
         canvas.drawLine(xStart, yStart, xStop, yStop, paintLine);
     }
@@ -405,7 +408,7 @@ public class TelaView extends View {
     public void desenhaPerpendicular(Canvas canvas, Reta reta, Paint paintLine){
         // linhas brancas
         paintLine.setColor(Color.GREEN);
-        paintLine.setStrokeWidth(3);
+        paintLine.setStrokeWidth(2 * densidade);
         canvas.drawLine(reta.getxInicio(), reta.getyInicio(), reta.getxFinal(), reta.getyFinal(), paintLine);
     }
 
