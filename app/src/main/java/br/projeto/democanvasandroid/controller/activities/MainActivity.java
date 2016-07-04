@@ -106,17 +106,17 @@ public class MainActivity extends AppCompatActivity {
             public void onValueChange(android.widget.NumberPicker picker, int oldVal, int newVal) {
                 if (pickerNegative) {
                     atualValorMm = newVal + minValorMm;
-                    tela.setListRetaY(atualValorMm);
+                    tela.setListRetaY(atualValorMm, true);
                     System.out.println("Valor em mm " + atualValorMm);
                     tela.invalidate();
                 }
                 else {
                     if (numProcesso < 6){
-                        tela.setListRetaY(-newVal);
+                        tela.setListRetaY(-newVal, false);
                         System.out.println("Valor em mm " + (-newVal));
                     }
                     else {
-                        tela.setListRetaY(newVal);
+                        tela.setListRetaY(newVal, false);
                         System.out.println("Valor em mm " + newVal);
                     }
                     tela.invalidate();
@@ -220,14 +220,71 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public int anteriorNumeroProcesso(int numProcesso){
+/*    public int anteriorNumeroProcesso(int numProcesso){
+        *//**
+         * Gera os primeiros 2 pontos
+         *//*
+        if (numProcesso < 3) {
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+        }
+        *//**
+         * Gera o 3º, a perpendicular e a visibilidade do Picker
+         *//*
+        else if (numProcesso == 3) {
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+            tela.salvaPerpendicular(tela.getListCirc().get(1), tela.getListCirc().get(2));
+            valorMili.setVisibility(View.VISIBLE);
+            *//**
+             * Calcula e retorna o ângulo entre as retas geradas
+             *//*
+            int angulo = (int) tela.getAnguloEntreRetas(tela.getListCirc().get(0), tela.getListCirc().get(2),
+                    tela.getListCirc().get(1), tela.getListCirc().get(2));
+            System.out.println("Ângulo entre alinhamento mecânico e anatômico: " + angulo);
+            angulo1 = angulo;
+        }
+        *//**
+         * Informa que o número do Picker foi salvo.
+         *//*
+        else if (numProcesso == 4) {
+            Toast.makeText(getApplicationContext(), "Tamanho salvo com sucesso!", Toast.LENGTH_SHORT).show();
+            tela.salvaReta(tela.getListReta().get(0), 0);
+            formatPickerNoNegative();
+            pickerNegative = false;
+            tela.invalidate();
+        }
+        else if (numProcesso == 5) {
+            valorMili.setVisibility(View.GONE);
+            formatPickerNegative();
+            pickerNegative = true;
+        }
+        else if (numProcesso == 6) {
+            tela.salvaListaCirculo(tela.getCirculo().getX(), tela.getCirculo().getY());
+        }
+        else if (numProcesso == 7) {
+        }
+        else if (numProcesso == 8) {
+            tela.removeListaCirculo();
+            valorMili.setVisibility(View.VISIBLE);
+        }
+        else if (numProcesso == 9) {
+            tela.removeListaReta();
+            formatPickerNoNegative();
+            pickerNegative = false;
+            tela.invalidate();
+        }
+        else if (numProcesso == 10){
+            // última reta criada para fechar lógica de visibilidade
+            tela.removeListaReta();
+            tela.invalidate();
+        }
+
         if(numProcesso == 1) {
             return numProcesso;
         }
         else {
             return numProcesso - 1;
         }
-    }
+    }*/
 
     public void formatPickerNegative(){
         /**
@@ -243,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 if(index == maxValorMm){
                     return "0";
                 }else {
-                    return index + minValorMm + "mm";
+                    return index + minValorMm + "cm";
                 }
             }
         });

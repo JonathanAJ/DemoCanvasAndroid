@@ -21,12 +21,14 @@ public class TelaView extends View {
     /**
      * Constantes
      */
+    private int ALTURA_IMG_CM = 50;
     private int AFASTAMENTO = 100;
     /**
      * Flags
      */
     private boolean circInicial = true;
     private boolean zoom = false;
+    private boolean imagemEscalada = false;
 
     /**
      * Variáveis de Estilização
@@ -53,7 +55,13 @@ public class TelaView extends View {
     private float anteriorScrollY = 0;
     private float inicioYReta;
     private float finalYReta;
+
+    /**
+     * Variáveis de cada tela
+     */
     private float densidade;
+    private float alturaEspecificaPixel;
+    private float alturaEspecificaCentimetro;
 
     /**
      * getters e setters
@@ -98,13 +106,23 @@ public class TelaView extends View {
         return listCirc;
     }
 
-    public void setListRetaY(int y) {
+    public void setListRetaY(int valorPicker, boolean centimetro) {
         /**
          * Sempre manipula a última reta criada
          */
         Reta reta = listReta.get(listReta.size() - 1);
-        reta.setyInicio(inicioYReta + y);
-        reta.setyFinal(finalYReta + y);
+        /**
+         * Calcula se é em MM ou CM
+         */
+        float valor;
+        if(centimetro){
+            valor = alturaEspecificaCentimetro;
+        }
+        else{
+            valor = alturaEspecificaCentimetro/10;
+        }
+        reta.setyInicio(inicioYReta + (valorPicker * valor));
+        reta.setyFinal(finalYReta + (valorPicker * valor));
     }
 
     public ArrayList<Reta> getListReta() {
@@ -425,11 +443,18 @@ public class TelaView extends View {
          * multiplicando ele pela largura e arredondando.
          */
         float aspectRatio = getAspectRatio(alturaImagem, larguraImagem);
-        int baixo = Math.round(larguraCanvas*aspectRatio);
-
+        int baixo = (int) (larguraCanvas * aspectRatio);
+        /**
+         * retorna o baixo para a variavel global da altura nessa tela específica
+         */
+        if(!imagemEscalada) {
+            alturaEspecificaPixel = baixo;
+            alturaEspecificaCentimetro = getAlturaEspecificaCentimetro(alturaEspecificaPixel);
+        }
         // left, top, right, bottom.
         d.setBounds(0, 0, (int) larguraCanvas, baixo);
         d.draw(canvas);
+        imagemEscalada = true;
     }
 
     public float getAspectRatio(float alturaImage, float larguraImagem){
@@ -439,6 +464,14 @@ public class TelaView extends View {
         return alturaImage/larguraImagem;
     }
 
+    public float getAlturaEspecificaCentimetro(float alturaEspecificaPixel){
+        /**
+         * retorna a altura em centimetro, a partir da altura em pixel
+         * que pode variar de tela em tela, de 1 pixel.
+         */
+        return (alturaEspecificaPixel/ALTURA_IMG_CM);
+    }
+
     public void salvaListaCirculo(float x, float y){
         Circulo circuloSave = new Circulo();
         circuloSave.setX(x);
@@ -446,6 +479,14 @@ public class TelaView extends View {
         listCirc.add(circuloSave);
         circInicial = true;
         invalidate();
+    }
+
+    public void removeListaReta(){
+        listReta.remove(listReta.size() - 1);
+    }
+
+    public void removeListaCirculo(){
+        listCirc.remove(listCirc.size() - 1);
     }
 
     /**
