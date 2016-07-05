@@ -21,7 +21,7 @@ public class TelaView extends View {
     /**
      * Constantes
      */
-    private int ALTURA_IMG_CM = 50;
+    private final float ALTURA_IMG_CM = 37.4f;
     private int AFASTAMENTO = 100;
     /**
      * Flags
@@ -106,17 +106,17 @@ public class TelaView extends View {
         return listCirc;
     }
 
-    public void setListRetaY(int valorPicker, boolean centimetro) {
+    public void setListRetaY(int valorPicker, boolean pixel) {
         /**
          * Sempre manipula a última reta criada
          */
         Reta reta = listReta.get(listReta.size() - 1);
         /**
-         * Calcula se é em MM ou CM
+         * Calcula se é em MM ou PX
          */
         float valor;
-        if(centimetro){
-            valor = alturaEspecificaCentimetro;
+        if(pixel){
+            valor = densidade;
         }
         else{
             valor = alturaEspecificaCentimetro/10;
@@ -297,7 +297,7 @@ public class TelaView extends View {
         /**
          * Raio de 10 pixels relativo a densidade da tela.
          */
-        float raio = 10 * densidade;
+        float raio = (float) (canvas.getWidth()*0.015) * densidade;
 
         if(isZoom()) {
             canvas.drawCircle((int) circulo.getX(), (int) circulo.getY(), raio, paintCirc);

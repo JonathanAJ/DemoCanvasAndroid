@@ -44,12 +44,19 @@ public class MainActivity extends AppCompatActivity {
     private int numProcesso = 1;
 
     private boolean pickerNegative = true;
-    private final int minValorMm = -30;
-    private final int maxValorMm = 30;
+    private final int minValorMm = -100;
+    private final int maxValorMm = 100;
     private int atualValorMm = 0;
 
     private int angulo1;
     private int angulo2;
+
+    /**
+     * Margem superior, inferior e altura radiografia.
+     */
+    private float mgTop;
+    private float mgBottom;
+    private float ALTURA_RADIO = 42.8f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 if(index == maxValorMm){
                     return "0";
                 }else {
-                    return index + minValorMm + "cm";
+                    return index + minValorMm + "px";
                 }
             }
         });
