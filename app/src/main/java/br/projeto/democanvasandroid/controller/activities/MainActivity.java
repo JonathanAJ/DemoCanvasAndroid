@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import br.projeto.democanvasandroid.R;
-import br.projeto.democanvasandroid.controller.TelaView;
+import br.projeto.democanvasandroid.controller.views.TelaView;
 import br.projeto.democanvasandroid.model.Circulo;
 import br.projeto.democanvasandroid.model.Imagem;
 import br.projeto.democanvasandroid.model.Reta;

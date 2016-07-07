@@ -34,7 +34,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <br.projeto.democanvasandroid.controller.TelaView
+            <br.projeto.democanvasandroid.controller.views.TelaView
                 android:id="@+id/telaView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

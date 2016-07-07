@@ -27,6 +27,12 @@ dependencies {
     compile 'com.google.firebase:firebase-database:9.0.0'
     compile 'com.shawnlin:number-picker:1.0.0'
     compile 'com.github.supervital:swipenumberpicker:1.0.4'
+
+    // CutRadio
+    compile project(':openCVLibrary2482')
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.google.code.gson:gson:2.4'
+    compile files('libs/library-1.2.2.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

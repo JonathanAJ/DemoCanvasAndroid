@@ -1,4 +1,4 @@
-package br.projeto.democanvasandroid.controller;
+package br.projeto.democanvasandroid.controller.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
