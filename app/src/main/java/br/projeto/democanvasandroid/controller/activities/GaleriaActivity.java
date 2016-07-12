@@ -23,7 +23,7 @@ import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.controller.views.GaleriaAdapter;
 import br.projeto.democanvasandroid.model.Imagem;
 
-public class Galeria extends AppCompatActivity {
+public class GaleriaActivity extends AppCompatActivity {
 
     private DatabaseReference url = FirebaseDatabase.getInstance().getReference();
 

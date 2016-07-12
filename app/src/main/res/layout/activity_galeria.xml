@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context=".controller.activities.Galeria">
+    tools:context=".controller.activities.GaleriaActivity">
 
     <LinearLayout
         android:id="@+id/layoutLoad"

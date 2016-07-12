@@ -21,6 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.shawnlin.numberpicker.NumberPicker;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import br.projeto.democanvasandroid.R;
 import br.projeto.democanvasandroid.controller.views.TelaView;
 import br.projeto.democanvasandroid.model.Circulo;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private NumberPicker valorMili;
     private String imgBase64;
     private Bitmap imgBitmap;
+    private String caminhoImagemFinal;
 
     private int numProcesso = 1;
 
@@ -64,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tela = (TelaView) findViewById(R.id.telaView);
-        String idImg = getIntent().getExtras().getString("idImg");
+//        String idImg = getIntent().getExtras().getString("idImg");
+        caminhoImagemFinal = getIntent().getExtras().getString("caminhoImagemFinal");
+
+        System.out.println(caminhoImagemFinal);
 
         btSalva = (Button) findViewById(R.id.btSalva);
         btRetorna = (Button) findViewById(R.id.btRetorna);
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         formatPickerNegative();
 
         iniciaListeners();
-        getImagem(idImg);
+        getImagem(caminhoImagemFinal);
     }
 
     @Override
@@ -336,24 +343,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getImagem(String id) {
-        System.out.println("ID____"+id);
-        url.child("Imagens").child(id).addListenerForSingleValueEvent(
-            new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // retorna imagemBase64
-                    Imagem img = dataSnapshot.getValue(Imagem.class);
-                    imgBase64 = img.getImagem();
-                    String imagem = img.getImagem().substring(HEADER, imgBase64.length());
-                    imgBitmap = Base64ParaBitmap(imagem);
-                    System.out.println("IMG____"+imagem);
-                    tela.setImg(new BitmapDrawable(getResources(), imgBitmap));
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("Erro no banco", databaseError.getMessage());
-                }
-            });
+//        url.child("Imagens").child(id).addListenerForSingleValueEvent(
+//            new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    // retorna imagemBase64
+//                    Imagem img = dataSnapshot.getValue(Imagem.class);
+//                    imgBase64 = img.getImagem();
+//                    String imagem = img.getImagem().substring(HEADER, imgBase64.length());
+//                    imgBitmap = Base64ParaBitmap(imagem);
+//                    System.out.println("IMG____"+imagem);
+//                    tela.setImg(new BitmapDrawable(getResources(), imgBitmap));
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                    Log.e("Erro no banco", databaseError.getMessage());
+//                }
+//            });
+        Bitmap bitmap;
+        try{
+            FileInputStream stream = new FileInputStream(new File(id));
+            bitmap = BitmapFactory.decodeStream(stream);
+            stream.close();
+            tela.setImg(new BitmapDrawable(getResources(), bitmap));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

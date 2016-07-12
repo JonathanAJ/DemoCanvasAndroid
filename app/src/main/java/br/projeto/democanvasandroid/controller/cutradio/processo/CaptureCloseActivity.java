@@ -49,11 +49,14 @@ public class CaptureCloseActivity extends Activity implements ImageProcessingAsy
 	public void onComplete() {
 		progress.dismiss();
 		Toast.makeText(getApplicationContext(), "Processamento de imagem finalizado", Toast.LENGTH_LONG).show();
-		img = BitmapFactory.decodeFile(UtilsPJ.getInstance().imageFinalClose);
-		iv1.setImageBitmap(img);
-		mAttacher = new PhotoViewAttacher(iv1);
-				
-}
+//		img = BitmapFactory.decodeFile(UtilsPJ.getInstance().imageFinalClose);
+//		iv1.setImageBitmap(img);
+//		mAttacher = new PhotoViewAttacher(iv1);
+
+		Intent activityDesenho = new Intent(this, br.projeto.democanvasandroid.controller.activities.MainActivity.class);
+		activityDesenho.putExtra("caminhoImagemFinal", UtilsPJ.getInstance().imageFinalClose);
+		startActivity(activityDesenho);
+	}
 	
 	@Override 
 	public void onSaveInstanceState(Bundle savedInstanceState) { 
@@ -199,12 +202,11 @@ public class CaptureCloseActivity extends Activity implements ImageProcessingAsy
 		}
 	}
 
-
     //cria arquivo que será preenchido com a imagem obtida pela câmera utilizando a data como nome da imagem
 	private File createImageFile() throws IOException {
 
-		String imageFileName =new Date().getTime()+".jpg";
-		File image = new File(UtilsPJ.STORAGE_DIR,imageFileName);
+		String imageFileName = 	new Date().getTime()+".jpg";
+		File image = new File(UtilsPJ.STORAGE_DIR, imageFileName);
 
 		// Save a file: path for use with ACTION_VIEW intents
 		mCurrentPhotoPath = "file:" + image.getAbsolutePath();
